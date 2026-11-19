@@ -38,6 +38,20 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Local image uploads (fallback when no cloud storage is configured).
+         * Served straight from public/uploads, so shared hosting needs no
+         * storage:link symlink.
+         */
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

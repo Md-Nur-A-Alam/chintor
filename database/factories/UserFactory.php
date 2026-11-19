@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -26,10 +27,13 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'phone' => '+8801'.fake()->unique()->numerify('7########'),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'type' => User::TypeStaff,
+            'is_active' => true,
         ];
     }
 
@@ -41,5 +45,30 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * A non-staff account (e.g. a future LMS student) that must not reach the admin panel.
+     */
+    public function student(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'student',
+        ]);
+    }
+
+    public function withRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName): void {
+            $role = Role::firstOrCreate(['name' => $roleName], ['label' => $roleName]);
+            $user->roles()->attach($role);
+        });
     }
 }
