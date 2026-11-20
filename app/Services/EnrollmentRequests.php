@@ -25,7 +25,10 @@ use Illuminate\Support\Facades\DB;
  */
 class EnrollmentRequests
 {
-    public function __construct(private readonly LeadCapture $leads) {}
+    public function __construct(
+        private readonly LeadCapture $leads,
+        private readonly StaffNotifier $notifier,
+    ) {}
 
     /**
      * @param  array{guardian_name: string, phone: string, student_name: string, class_level?: ?int, payment_method?: ?string, sender_number?: ?string, transaction_id?: ?string}  $details
@@ -116,7 +119,7 @@ class EnrollmentRequests
             return;
         }
 
-        $enrollment->payments()->create([
+        $payment = $enrollment->payments()->create([
             'method' => PaymentMethod::from($details['payment_method']),
             'amount' => $enrollment->payable_amount,
             'sender_number' => $details['sender_number'] ?? null,
@@ -124,5 +127,7 @@ class EnrollmentRequests
             'status' => PaymentStatus::Pending,
             'submitted_by' => $submittedBy,
         ]);
+
+        $this->notifier->paymentSubmitted($payment);
     }
 }

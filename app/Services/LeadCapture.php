@@ -24,6 +24,8 @@ class LeadCapture
 {
     private const DEDUPLICATION_DAYS = 30;
 
+    public function __construct(private readonly StaffNotifier $notifier) {}
+
     /**
      * @param  array{student_name?: ?string, guardian_name?: ?string, phone: string, whatsapp?: ?string, email?: ?string, class_level?: ?int, age?: ?int, message?: ?string}  $contact
      * @param  array{program_ids?: list<int>, course_ids?: list<int>, book_ids?: list<int>}  $interests
@@ -45,6 +47,8 @@ class LeadCapture
                     'user_agent' => mb_substr((string) $request->userAgent(), 0, 500),
                     ...$request->session()->get(CaptureMarketingAttribution::SessionKey, []),
                 ]);
+
+                $this->notifier->newLead($lead);
             } else {
                 // Fill in anything the earlier submission did not have.
                 foreach ($contact as $field => $value) {
@@ -83,11 +87,13 @@ class LeadCapture
             ->exists();
 
         if (! $hasOpenRequest) {
-            Assessment::create([
+            $assessment = Assessment::create([
                 'lead_id' => $lead->id,
                 'course_id' => $courseId,
                 'status' => AssessmentStatus::Requested,
             ]);
+
+            $this->notifier->assessmentRequested($assessment);
         }
     }
 

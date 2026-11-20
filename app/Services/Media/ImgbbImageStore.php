@@ -61,9 +61,14 @@ class ImgbbImageStore implements ImageStore
         );
     }
 
+    /**
+     * Fields go in the multipart body (as in ImgBB's docs) with an honest,
+     * descriptive User-Agent: ImgBB's firewall rejects some generic HTTP
+     * client agents with "You have been forbidden to use this website."
+     */
     private function upload(string $contents, string $filename, string $name, ?int $expirationSeconds = null): Response
     {
-        $query = array_filter([
+        $fields = array_filter([
             'key' => $this->apiKey,
             'name' => $name,
             'expiration' => $expirationSeconds,
@@ -71,18 +76,31 @@ class ImgbbImageStore implements ImageStore
 
         try {
             $response = Http::timeout(30)
+                ->withUserAgent('Mozilla/5.0 (compatible; ChintorMedia/1.0; +'.config('app.url').')')
+                ->acceptJson()
                 ->attach('image', $contents, $filename)
-                ->post(self::ENDPOINT.'?'.http_build_query($query));
+                ->post(self::ENDPOINT, $fields);
         } catch (ConnectionException) {
             throw new MediaStorageException('ImgBB সার্ভারের সাথে সংযোগ করা যায়নি। ইন্টারনেট সংযোগ দেখুন।');
         }
 
         if ($response->failed() || $response->json('success') !== true || blank($response->json('data.url'))) {
-            $reason = $response->json('error.message') ?? "HTTP {$response->status()}";
-
-            throw new MediaStorageException("ImgBB আপলোড ব্যর্থ: {$reason}");
+            throw new MediaStorageException($this->failureMessage($response));
         }
 
         return $response;
+    }
+
+    private function failureMessage(Response $response): string
+    {
+        $reason = $response->json('error.message') ?? "HTTP {$response->status()}";
+
+        if ($response->status() === 403 || str_contains((string) $reason, 'forbidden')) {
+            return "ImgBB আপলোড ব্যর্থ (HTTP {$response->status()}): {$reason} — ImgBB আপনার নেটওয়ার্ক/IP ব্লক করেছে। "
+                .'VPN বন্ধ করে বা অন্য ইন্টারনেট সংযোগ থেকে চেষ্টা করুন; লাইভ সার্ভার থেকে সাধারণত কাজ করে। '
+                .'ততক্ষণ “স্বয়ংক্রিয়” মোডে ছবি এই সার্ভারে সেভ হবে।';
+        }
+
+        return "ImgBB আপলোড ব্যর্থ (HTTP {$response->status()}): {$reason}";
     }
 }

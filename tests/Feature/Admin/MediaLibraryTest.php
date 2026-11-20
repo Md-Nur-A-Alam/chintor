@@ -59,7 +59,10 @@ test('with an ImgBB key images are uploaded to ImgBB and previewed from its URL'
         ->provider->toBe(Media::ProviderImgbb)
         ->url->toBe('https://i.ibb.co/abc123/banner.png');
 
-    Http::assertSent(fn ($request) => str_starts_with($request->url(), 'https://api.imgbb.com/1/upload?key=test-key'));
+    // The key travels in the body (not the URL) with a descriptive User-Agent.
+    Http::assertSent(fn ($request) => $request->url() === 'https://api.imgbb.com/1/upload'
+        && str_contains($request->header('User-Agent')[0], 'ChintorMedia')
+        && collect($request->data())->contains(fn (array $part) => $part['name'] === 'key' && $part['contents'] === 'test-key'));
 
     $this->actingAs($this->staff)->get('/admin/media')->assertSee('https://i.ibb.co/abc123/banner.png');
 });
@@ -74,6 +77,20 @@ test('a failed cloud upload is reported and nothing is saved', function () {
         ->assertSessionHasErrors('image');
 
     expect(Media::count())->toBe(0);
+});
+
+test('in auto mode a blocked ImgBB upload falls back to this server with an explanation', function () {
+    app(SiteSettings::class)->updateMedia(['driver' => 'auto'], ['imgbb_api_key' => 'test-key']);
+
+    Http::fake(['api.imgbb.com/*' => Http::response(['status_code' => 403, 'error' => ['message' => 'You have been forbidden to use this website.']], 403)]);
+
+    $this->actingAs($this->staff)
+        ->post('/admin/media', ['image' => pngUpload()])
+        ->assertSessionHas('status')
+        ->assertSessionHasErrors('general');
+
+    expect(session('errors')->first('general'))->toContain('ImgBB আপনার নেটওয়ার্ক/IP ব্লক করেছে')
+        ->and(Media::sole()->provider)->toBe(Media::ProviderLocal);
 });
 
 test('only images are accepted', function () {

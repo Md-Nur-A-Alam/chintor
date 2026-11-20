@@ -30,6 +30,7 @@ class PermissionSeeder extends Seeder
         'enrollments.manage' => ['label' => 'এনরোলমেন্ট', 'roles' => [Role::Manager, Role::CourseCoordinator, Role::SalesExecutive]],
         'payments.verify' => ['label' => 'পেমেন্ট যাচাই', 'roles' => [Role::Manager]],
         'reports.view' => ['label' => 'রিপোর্ট', 'roles' => [Role::Manager, Role::Marketing]],
+        'developer.tools' => ['label' => 'ডেভেলপার টুলস', 'roles' => [Role::Developer]],
     ];
 
     public function run(): void

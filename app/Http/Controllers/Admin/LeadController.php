@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\StaffNotifier;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -120,7 +121,7 @@ class LeadController extends Controller
     /**
      * Manual distribution from the central queue (one or many leads).
      */
-    public function assign(Request $request): RedirectResponse
+    public function assign(Request $request, StaffNotifier $notifier): RedirectResponse
     {
         abort_unless($request->user()->can('leads.assign'), 403);
 
@@ -145,6 +146,10 @@ class LeadController extends Controller
         });
 
         $count = count($validated['lead_ids']);
+
+        if ($assignee !== null) {
+            $notifier->leadsAssigned($assignee, $count, $count === 1 ? Lead::find($validated['lead_ids'][0]) : null, $request->user());
+        }
 
         return back()->with('status', $assignee ? "{$count}টি লিড {$assignee->name}-কে দেওয়া হয়েছে।" : "{$count}টি লিড কিউতে ফেরত গেছে।");
     }

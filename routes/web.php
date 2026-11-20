@@ -9,11 +9,18 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\CourseVariationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeliveryZoneController;
+use App\Http\Controllers\Admin\Developer\DatabaseConsoleController;
+use App\Http\Controllers\Admin\Developer\DeveloperController;
+use App\Http\Controllers\Admin\Developer\ErrorLogController;
+use App\Http\Controllers\Admin\Developer\SchemaController;
+use App\Http\Controllers\Admin\Developer\StaffAccessController;
 use App\Http\Controllers\Admin\EnrollmentController as AdminEnrollmentController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GuideController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MediaSettingsController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentAccountController;
@@ -113,6 +120,29 @@ Route::prefix('admin')->name('admin.')->middleware('locale:bn')->group(function 
     Route::middleware(['auth', 'staff'])->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+        Route::get('/guide', GuideController::class)->name('guide');
+
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/summary', [NotificationController::class, 'summary'])->name('notifications.summary');
+        Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
+        Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+
+        // Reachable while viewing the panel as another staff member.
+        Route::post('/impersonation/stop', [StaffAccessController::class, 'stopImpersonating'])->name('impersonation.stop');
+
+        // Developer tools
+        Route::middleware('can:developer.tools')->prefix('developer')->name('developer.')->group(function (): void {
+            Route::get('/', [DeveloperController::class, 'index'])->name('index');
+            Route::get('/guide', [DeveloperController::class, 'guide'])->name('guide');
+            Route::get('/database', [DatabaseConsoleController::class, 'show'])->name('database');
+            Route::post('/database', [DatabaseConsoleController::class, 'run'])->name('database.run');
+            Route::get('/schema', [SchemaController::class, 'show'])->name('schema');
+            Route::get('/errors', [ErrorLogController::class, 'index'])->name('errors');
+            Route::post('/errors/clear', [ErrorLogController::class, 'clear'])->name('errors.clear');
+            Route::get('/staff', [StaffAccessController::class, 'index'])->name('staff');
+            Route::post('/staff/{user}/impersonate', [StaffAccessController::class, 'impersonate'])->name('staff.impersonate');
+            Route::post('/staff/{user}/reset-password', [StaffAccessController::class, 'resetPassword'])->name('staff.reset-password');
+        });
 
         Route::resource('users', UserController::class)
             ->except('show')

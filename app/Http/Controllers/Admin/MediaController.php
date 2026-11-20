@@ -34,6 +34,12 @@ class MediaController extends Controller
             return back()->withErrors(['image' => $exception->getMessage()]);
         }
 
+        if ($storage->lastFallbackReason !== null) {
+            return back()
+                ->with('status', 'ছবিটি এই সার্ভারে সেভ হয়েছে (ক্লাউড স্টোরেজ ব্যর্থ হয়েছে)।')
+                ->withErrors(['general' => $storage->lastFallbackReason]);
+        }
+
         return back()->with('status', "ছবি আপলোড হয়েছে ({$media->provider})।");
     }
 

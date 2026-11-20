@@ -30,9 +30,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // A super admin may do everything; everyone else needs a matching permission.
+        // Admins and developers may do everything; everyone else needs a matching permission.
         Gate::before(function (User $user, string $ability): ?bool {
-            if ($user->isSuperAdmin()) {
+            if ($user->hasFullAccess()) {
                 return true;
             }
 

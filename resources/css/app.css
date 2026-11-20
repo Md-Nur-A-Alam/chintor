@@ -266,6 +266,35 @@
         & strong {
             @apply text-ink;
         }
+
+        & h1 {
+            @apply mb-4 text-3xl font-bold text-ink;
+        }
+
+        & table {
+            @apply mb-6 w-full border-collapse text-sm;
+        }
+
+        & th,
+        & td {
+            @apply border border-line px-3 py-2 text-left align-top;
+        }
+
+        & th {
+            @apply bg-surface-muted font-semibold text-ink;
+        }
+
+        & code {
+            @apply rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[0.85em] text-ink;
+        }
+
+        & pre {
+            @apply mb-4 overflow-x-auto rounded-xl bg-surface-muted p-4 text-xs;
+
+            & code {
+                @apply bg-transparent p-0;
+            }
+        }
     }
 
     /* Ambient brand light behind hero sections (CSS only — no image requests). */

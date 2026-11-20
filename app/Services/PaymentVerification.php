@@ -20,6 +20,8 @@ use InvalidArgumentException;
  */
 class PaymentVerification
 {
+    public function __construct(private readonly StaffNotifier $notifier) {}
+
     public function verify(Payment $payment, User $staff): void
     {
         $this->ensurePending($payment);
@@ -38,6 +40,8 @@ class PaymentVerification
                 default => null,
             };
         });
+
+        $this->notifier->paymentVerified($payment->fresh('payable'), $staff);
     }
 
     public function reject(Payment $payment, User $staff, string $reason): void

@@ -136,6 +136,14 @@ test('every admin page renders for an admin', function () {
         '/admin/settings/sales',
         '/admin/payment-accounts',
         '/admin/payment-accounts/create',
+        '/admin/guide',
+        '/admin/notifications',
+        '/admin/developer',
+        '/admin/developer/guide',
+        '/admin/developer/database',
+        '/admin/developer/schema',
+        '/admin/developer/errors',
+        '/admin/developer/staff',
     ];
 
     foreach ($urls as $url) {

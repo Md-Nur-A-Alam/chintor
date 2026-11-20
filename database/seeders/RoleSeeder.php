@@ -19,6 +19,11 @@ class RoleSeeder extends Seeder
             'description' => 'সব মডিউল ও সেটিংসে পূর্ণ অ্যাক্সেস।',
             'max_discount_percent' => 100,
         ],
+        Role::Developer => [
+            'label' => 'ডেভেলপার',
+            'description' => 'পূর্ণ অ্যাক্সেস + ডেভেলপার টুলস (ডেটাবেস, ER ডায়াগ্রাম, এরর লগ, প্রোফাইল সুইচ, পাসওয়ার্ড রিসেট)।',
+            'max_discount_percent' => 100,
+        ],
         Role::Manager => [
             'label' => 'ম্যানেজার',
             'description' => 'লিড বণ্টন, অর্ডার, এনরোলমেন্ট, পেমেন্ট ও রিপোর্ট।',

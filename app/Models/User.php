@@ -68,6 +68,19 @@ class User extends Authenticatable
         return $this->hasRole(Role::SuperAdmin);
     }
 
+    public function isDeveloper(): bool
+    {
+        return $this->hasRole(Role::Developer);
+    }
+
+    /**
+     * Admins and developers pass every permission check.
+     */
+    public function hasFullAccess(): bool
+    {
+        return $this->isSuperAdmin() || $this->isDeveloper();
+    }
+
     /**
      * The largest discount this staff member may give, from their roles.
      */

@@ -69,6 +69,18 @@
                 <div x-show="sidebarOpen" x-cloak x-on:click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/40 lg:hidden"></div>
 
                 <div class="min-w-0">
+                    @if (session()->has(\App\Http\Controllers\Admin\Developer\StaffAccessController::ImpersonatorKey))
+                        {{-- A developer is viewing the panel as this staff member. --}}
+                        <div class="flex flex-wrap items-center justify-center gap-3 bg-sun-400 px-4 py-2 text-sm font-semibold text-teal-950">
+                            <x-icon name="switch" class="size-4" />
+                            আপনি এখন {{ auth()->user()->name }}-এর প্রোফাইলে আছেন
+                            <form method="POST" action="{{ route('admin.impersonation.stop') }}">
+                                @csrf
+                                <button type="submit" class="cursor-pointer rounded-full bg-teal-950 px-3 py-1 text-xs text-white">নিজের প্রোফাইলে ফিরুন</button>
+                            </form>
+                        </div>
+                    @endif
+
                     <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-canvas/85 px-4 backdrop-blur sm:px-6">
                         <button type="button" x-on:click="sidebarOpen = true" class="grid size-10 place-items-center rounded-full ring-1 ring-line lg:hidden">
                             <x-icon name="menu" class="size-5" />
@@ -79,8 +91,12 @@
                             ওয়েবসাইট দেখুন <x-icon name="external" class="size-4" />
                         </a>
 
-                        <div class="flex items-center gap-3">
-                            <x-theme-switcher />
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <a href="{{ route('admin.guide') }}" class="hidden items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink md:inline-flex">
+                                <x-icon name="help" class="size-4" /> নির্দেশিকা
+                            </a>
+                            <x-admin.notification-bell />
+                            <x-theme-switcher class="hidden sm:inline-flex" />
                             <form method="POST" action="{{ route('admin.logout') }}">
                                 @csrf
                                 <x-button type="submit" variant="secondary" size="sm">
@@ -99,5 +115,7 @@
         @else
             <main>{{ $slot }}</main>
         @endauth
+
+        {{ $scripts ?? '' }}
     </body>
 </html>

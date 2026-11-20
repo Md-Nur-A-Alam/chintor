@@ -20,6 +20,8 @@ class AdminNavigation
             'group' => 'ওভারভিউ',
             'items' => [
                 ['label' => 'ড্যাশবোর্ড', 'route' => 'admin.dashboard', 'icon' => 'home', 'permission' => null, 'active' => 'admin.dashboard'],
+                ['label' => 'নোটিফিকেশন', 'route' => 'admin.notifications.index', 'icon' => 'bell', 'permission' => null, 'active' => 'admin.notifications.*'],
+                ['label' => 'নির্দেশিকা', 'route' => 'admin.guide', 'icon' => 'help', 'permission' => null, 'active' => 'admin.guide'],
             ],
         ],
         [
@@ -58,6 +60,17 @@ class AdminNavigation
                 ['label' => 'বিক্রয় সেটিংস', 'route' => 'admin.settings.sales.edit', 'icon' => 'refund', 'permission' => 'settings.manage', 'active' => 'admin.settings.sales.*'],
                 ['label' => 'পেমেন্ট অ্যাকাউন্ট', 'route' => 'admin.payment-accounts.index', 'icon' => 'wallet', 'permission' => 'settings.manage', 'active' => 'admin.payment-accounts.*'],
                 ['label' => 'ছবি স্টোরেজ', 'route' => 'admin.settings.media.edit', 'icon' => 'cloud', 'permission' => 'settings.manage', 'active' => 'admin.settings.media.*'],
+            ],
+        ],
+        [
+            'group' => 'ডেভেলপার',
+            'items' => [
+                ['label' => 'ডেভেলপার হাব', 'route' => 'admin.developer.index', 'icon' => 'code', 'permission' => 'developer.tools', 'active' => 'admin.developer.index'],
+                ['label' => 'ডেটাবেস কনসোল', 'route' => 'admin.developer.database', 'icon' => 'database', 'permission' => 'developer.tools', 'active' => 'admin.developer.database*'],
+                ['label' => 'ER ডায়াগ্রাম', 'route' => 'admin.developer.schema', 'icon' => 'layers', 'permission' => 'developer.tools', 'active' => 'admin.developer.schema'],
+                ['label' => 'এরর লগ', 'route' => 'admin.developer.errors', 'icon' => 'alert', 'permission' => 'developer.tools', 'active' => 'admin.developer.errors*'],
+                ['label' => 'স্টাফ অ্যাক্সেস', 'route' => 'admin.developer.staff', 'icon' => 'key', 'permission' => 'developer.tools', 'active' => 'admin.developer.staff*'],
+                ['label' => 'ডেভেলপার গাইড', 'route' => 'admin.developer.guide', 'icon' => 'file', 'permission' => 'developer.tools', 'active' => 'admin.developer.guide'],
             ],
         ],
     ];

@@ -17,6 +17,8 @@ class Role extends Model
 
     public const CourseCoordinator = 'course_coordinator';
 
+    public const Developer = 'developer';
+
     public const Teacher = 'teacher';
 
     public const Student = 'student';

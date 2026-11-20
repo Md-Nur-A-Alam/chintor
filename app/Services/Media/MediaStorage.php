@@ -17,6 +17,11 @@ class MediaStorage
 {
     public const DRIVERS = ['auto', Media::ProviderR2, Media::ProviderImgbb, Media::ProviderLocal];
 
+    /**
+     * Why the last upload fell back to local storage (null when it did not).
+     */
+    public ?string $lastFallbackReason = null;
+
     public function __construct(private readonly SiteSettings $settings) {}
 
     public function activeProvider(): string
@@ -81,7 +86,20 @@ class MediaStorage
      */
     public function upload(UploadedFile $file, string $directory = 'images', ?int $uploadedBy = null): Media
     {
-        $stored = $this->store($this->activeProvider())->store($file, $directory);
+        $this->lastFallbackReason = null;
+        $provider = $this->activeProvider();
+
+        try {
+            $stored = $this->store($provider)->store($file, $directory);
+        } catch (MediaStorageException $exception) {
+            // In "auto" mode a cloud failure must not block staff: keep the image on this server.
+            if ($this->settings->media()['driver'] !== 'auto' || $provider === Media::ProviderLocal) {
+                throw $exception;
+            }
+
+            $this->lastFallbackReason = $exception->getMessage();
+            $stored = $this->store(Media::ProviderLocal)->store($file, $directory);
+        }
 
         [$width, $height] = $this->dimensions($file);
 

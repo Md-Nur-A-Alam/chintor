@@ -80,5 +80,5 @@ test('the ImgBB connection check reports success and failure', function () {
 
     $this->actingAs($this->admin)
         ->post('/admin/settings/media/test', ['provider' => 'imgbb'])
-        ->assertSessionHasErrors(['connection' => 'ImgBB আপলোড ব্যর্থ: Invalid API v1 key.']);
+        ->assertSessionHasErrors(['connection' => 'ImgBB আপলোড ব্যর্থ (HTTP 400): Invalid API v1 key.']);
 });

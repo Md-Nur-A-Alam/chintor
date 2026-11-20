@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\DB;
  */
 class OrderPlacement
 {
+    public function __construct(private readonly StaffNotifier $notifier) {}
+
     /**
      * @param  array{customer_name: string, phone: string, alt_phone?: ?string, shipping_address: string, district: string, upazila?: ?string, notes?: ?string, payment_method: string, sender_number?: ?string, transaction_id: string}  $details
      */
@@ -58,7 +60,7 @@ class OrderPlacement
                 'line_total' => $subtotal,
             ]);
 
-            $order->payments()->create([
+            $payment = $order->payments()->create([
                 'method' => PaymentMethod::from($details['payment_method']),
                 'amount' => $order->total,
                 'sender_number' => $details['sender_number'] ?? null,
@@ -66,6 +68,9 @@ class OrderPlacement
                 'status' => PaymentStatus::Pending,
                 'submitted_by' => 'customer',
             ]);
+
+            $this->notifier->newOrder($order);
+            $this->notifier->paymentSubmitted($payment);
 
             return $order;
         });

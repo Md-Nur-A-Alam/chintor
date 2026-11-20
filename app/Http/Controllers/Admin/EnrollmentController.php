@@ -12,6 +12,7 @@ use App\Models\CourseVariation;
 use App\Models\Enrollment;
 use App\Models\Lead;
 use App\Services\EnrollmentRequests;
+use App\Services\StaffNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -113,7 +114,7 @@ class EnrollmentController extends Controller
      * Staff record a payment received by phone, bank or cash; it then waits
      * for verification like any other payment.
      */
-    public function storePayment(Request $request, Enrollment $enrollment): RedirectResponse
+    public function storePayment(Request $request, Enrollment $enrollment, StaffNotifier $notifier): RedirectResponse
     {
         $validated = $request->validate([
             'method' => ['required', Rule::enum(PaymentMethod::class)],
@@ -122,11 +123,13 @@ class EnrollmentController extends Controller
             'transaction_id' => ['nullable', 'string', 'max:50', Rule::unique('payments', 'transaction_id')->where('method', $request->input('method'))],
         ]);
 
-        $enrollment->payments()->create([
+        $payment = $enrollment->payments()->create([
             ...$validated,
             'status' => PaymentStatus::Pending,
             'submitted_by' => 'staff',
         ]);
+
+        $notifier->paymentSubmitted($payment);
 
         return back()->with('status', 'পেমেন্ট যোগ হয়েছে — যাচাইয়ের অপেক্ষায়।');
     }

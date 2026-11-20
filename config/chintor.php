@@ -45,4 +45,20 @@ return [
         'tin' => env('CHINTOR_TIN'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Developer Tools
+    |--------------------------------------------------------------------------
+    |
+    | The SQL console can run write statements (INSERT/UPDATE/DELETE/ALTER…)
+    | only when this is true. It defaults to off in production; turn it on
+    | there only for a deliberate maintenance window.
+    |
+    */
+
+    'developer' => [
+        'allow_write_queries' => (bool) env('CHINTOR_DEV_SQL_WRITES', env('APP_ENV') !== 'production'),
+        'max_result_rows' => 500,
+    ],
+
 ];
