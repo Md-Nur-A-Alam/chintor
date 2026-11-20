@@ -91,13 +91,16 @@
                 </a>
             @endif
 
-            <x-theme-switcher class="hidden md:inline-flex" />
-            <x-locale-switcher class="hidden sm:flex" />
+            {{-- Hidden by a wrapper: the components' own display class would override "hidden". --}}
+            <div class="hidden md:block"><x-theme-switcher /></div>
+            <div class="hidden sm:block"><x-locale-switcher /></div>
 
-            <x-button :href="$startUrl" size="sm" class="hidden md:inline-flex">
-                {{ __('site.cta.start_learning') }}
-                <x-icon name="arrow-right" class="size-4" />
-            </x-button>
+            <div class="hidden md:block">
+                <x-button :href="$startUrl" size="sm">
+                    {{ __('site.cta.start_learning') }}
+                    <x-icon name="arrow-right" class="size-4" />
+                </x-button>
+            </div>
 
             <button
                 type="button"

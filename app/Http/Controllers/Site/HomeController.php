@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Site;
 
+use App\Enums\BatchStatus;
 use App\Enums\TestimonialAudience;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Campaign;
 use App\Models\Course;
+use App\Models\CourseBatch;
 use App\Models\Faq;
 use App\Models\Program;
 use App\Models\Teacher;
@@ -24,7 +26,7 @@ use Illuminate\View\View;
  */
 class HomeController extends Controller
 {
-    private const FEATURED_COURSE_LIMIT = 6;
+    private const FEATURED_COURSE_LIMIT = 9;
 
     private const FEATURED_BOOK_LIMIT = 4;
 
@@ -46,6 +48,7 @@ class HomeController extends Controller
 
         return view('site.home', [
             'hero' => $homePage->hero(),
+            'nextBatch' => $this->nextBatch(),
             'heroCampaigns' => $campaigns->filter(fn (Campaign $campaign) => $campaign->show_in_hero && $campaign->image_url)->values(),
             'sections' => $sections,
             'stats' => $homePage->stats(),
@@ -72,6 +75,20 @@ class HomeController extends Controller
             ->withCount(['courses' => fn ($query) => $query->published()])
             ->orderBy('sort_order')
             ->get();
+    }
+
+    /**
+     * The soonest open batch of a published course, for the hero's "next batch" card.
+     */
+    private function nextBatch(): ?CourseBatch
+    {
+        return CourseBatch::query()
+            ->whereIn('status', [BatchStatus::Upcoming, BatchStatus::Enrolling])
+            ->whereDate('starts_on', '>=', today())
+            ->whereHas('course', fn ($query) => $query->published())
+            ->with('course')
+            ->orderBy('starts_on')
+            ->first();
     }
 
     /**

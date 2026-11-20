@@ -1,6 +1,6 @@
 {{-- Every running campaign or event, newest first by sort order. --}}
 @if ($campaigns->isNotEmpty())
-    <x-site.section :title="$section['title']" :subtitle="$section['subtitle']" id="campaigns">
+    <x-site.section :eyebrow="$section['eyebrow']" :title="$section['title']" :subtitle="$section['subtitle']" :band="$section['band']" id="campaigns">
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($campaigns as $campaign)
                 @php($link = $campaign->localizedLink())

@@ -165,7 +165,7 @@ class HomePageContent
     /**
      * Visible sections in display order with their headings resolved.
      *
-     * @return list<array{key: string, title: string, subtitle: ?string}>
+     * @return list<array{key: string, eyebrow: string, title: string, subtitle: ?string}>
      */
     public function visibleSections(): array
     {
@@ -180,6 +180,7 @@ class HomePageContent
 
             $sections[] = [
                 'key' => $section['key'],
+                'eyebrow' => $this->text(null, "site.home.sections.{$section['key']}.eyebrow"),
                 'title' => $this->text($section['title'], "site.home.sections.{$section['key']}.title"),
                 'subtitle' => $subtitle === '' ? null : $subtitle,
             ];

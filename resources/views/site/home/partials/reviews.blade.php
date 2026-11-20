@@ -14,7 +14,7 @@
 @endphp
 
 @if ($reviews->isNotEmpty())
-    <x-site.section :title="$section['title']" :subtitle="$section['subtitle']">
+    <x-site.section :eyebrow="$section['eyebrow']" :title="$section['title']" :subtitle="$section['subtitle']" :band="$section['band']">
         @if ($videoReviews->isNotEmpty())
             <div class="mb-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 @foreach ($videoReviews as $review)

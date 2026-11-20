@@ -407,6 +407,18 @@
         transform: none;
     }
 
+    /* A line that draws itself from the left when revealed. */
+    .motion [data-reveal].reveal-line {
+        opacity: 1;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition-duration: 1.4s;
+    }
+
+    .motion [data-reveal].reveal-line.is-revealed {
+        transform: none;
+    }
+
     .marquee {
         overflow: hidden;
         mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);

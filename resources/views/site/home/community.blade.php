@@ -12,7 +12,7 @@
 @endphp
 
 @if ($networks !== [])
-    <x-site.section :title="$section['title']" :subtitle="$section['subtitle']">
+    <x-site.section :eyebrow="$section['eyebrow']" :title="$section['title']" :subtitle="$section['subtitle']" :band="$section['band']">
         <ul @class([
             'grid gap-4',
             'sm:grid-cols-2' => count($networks) >= 2,

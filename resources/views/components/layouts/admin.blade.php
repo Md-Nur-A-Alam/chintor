@@ -96,7 +96,7 @@
                                 <x-icon name="help" class="size-4" /> নির্দেশিকা
                             </a>
                             <x-admin.notification-bell />
-                            <x-theme-switcher class="hidden sm:inline-flex" />
+                            <div class="hidden sm:block"><x-theme-switcher /></div>
                             <form method="POST" action="{{ route('admin.logout') }}">
                                 @csrf
                                 <x-button type="submit" variant="secondary" size="sm">
