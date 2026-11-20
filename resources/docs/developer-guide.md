@@ -96,6 +96,15 @@ Read this before changing code. Product decisions live in `public/assets/require
 - `Campaign::running()` = active and inside `starts_at`/`ends_at`. The hero uses running campaigns with `show_in_hero` and an image; the announcement bar uses the first one with `show_in_bar` (view composer in `AppServiceProvider`, cached for 5 minutes, cleared on save).
 - Admin-entered links go through `Localization::path()`, which adds the locale prefix to on-site paths.
 - The app timezone is `Asia/Dhaka`.
+- `homepage.manage` is held by Marketing (plus admins and developers).
+
+### Motion
+
+- Opening animation: `.animate-rise` / `.animate-pop` with `style="--delay: N"` (100 ms steps), `.animate-float`, `.animate-aurora` (CSS in `resources/css/app.css`).
+- Scroll reveal: add `data-reveal` (or wrap in `<x-reveal :index="$loop->index">`). Content is hidden only after `resources/js/motion.js` adds `html.motion`, and items already on screen are shown at once. Do not put `data-reveal` on an element that has its own `transition` utility (utilities override the reveal transition); wrap it instead.
+- Count-up: `data-count-to`, `data-count-decimals`, `data-count-grouping`, `data-count-bangla` (see `site/home/stats.blade.php`).
+- Lanes: `<x-marquee :reverse="true" :duration="60">`. Content must be wider than the screen to loop without a gap, so repeat short lists (repeats get `aria-hidden` and `tabindex="-1"`).
+- Everything respects `prefers-reduced-motion`.
 
 ## 10. Useful commands
 

@@ -3,6 +3,7 @@
 use App\Enums\TestimonialAudience;
 use App\Models\Campaign;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Services\HomePageContent;
@@ -66,7 +67,7 @@ test('impact numbers show only when staff enter them', function () {
         'stats' => [['value' => '1200+', 'label' => ['bn' => 'শিক্ষার্থী শিখেছে', 'en' => 'students taught']]],
     ]));
 
-    $this->get('/')->assertSee('১২০০+')->assertSee('শিক্ষার্থী শিখেছে');
+    $this->get('/')->assertSeeText('১২০০+')->assertSee('শিক্ষার্থী শিখেছে');
 });
 
 test('button links must be a site path or a full URL', function () {
@@ -78,11 +79,56 @@ test('button links must be a site path or a full URL', function () {
 });
 
 test('staff without the homepage permission cannot edit the homepage or campaigns', function () {
+    $sales = User::factory()->withRole(Role::SalesExecutive)->create();
+
+    $this->actingAs($sales)->get('/admin/homepage')->assertForbidden();
+    $this->actingAs($sales)->put('/admin/homepage', homePagePayload())->assertForbidden();
+    $this->actingAs($sales)->get('/admin/campaigns')->assertForbidden();
+});
+
+test('marketing manages the homepage, campaigns and FAQs', function () {
     $marketing = User::factory()->withRole(Role::Marketing)->create();
 
-    $this->actingAs($marketing)->get('/admin/homepage')->assertForbidden();
-    $this->actingAs($marketing)->put('/admin/homepage', homePagePayload())->assertForbidden();
-    $this->actingAs($marketing)->get('/admin/campaigns')->assertForbidden();
+    $this->actingAs($marketing)->put('/admin/homepage', homePagePayload())->assertSessionHasNoErrors();
+    $this->actingAs($marketing)->post('/admin/campaigns', ['title' => ['bn' => 'মার্কেটিংয়ের অফার'], 'channel' => 'facebook', 'is_active' => '1'])->assertRedirect(route('admin.campaigns.index'));
+    $this->actingAs($marketing)->post('/admin/faqs', ['question' => ['bn' => 'ক্লাস কখন?'], 'answer' => ['bn' => 'সন্ধ্যায়।'], 'is_active' => '1'])->assertRedirect(route('admin.faqs.index'));
+
+    $this->get('/')->assertSee('মার্কেটিংয়ের অফার')->assertSee('ক্লাস কখন?');
+});
+
+test('impact numbers count up from their real value and keep their prefix and suffix', function () {
+    $admin = User::factory()->withRole(Role::SuperAdmin)->create();
+
+    $this->actingAs($admin)->put('/admin/homepage', homePagePayload([
+        'stats' => [['value' => '4.8/5', 'label' => ['bn' => 'অভিভাবক রেটিং']], ['value' => '1,200+', 'label' => ['bn' => 'শিক্ষার্থী']]],
+    ]));
+
+    $this->get('/')
+        ->assertSeeText('৪.৮/৫')
+        ->assertSeeText('১,২০০+')
+        ->assertSeeInOrder(['data-count-to="4.8"', 'data-count-decimals="1"', 'data-count-to="1200"', 'data-count-grouping="1"'], false);
+});
+
+test('the hero shows the rotating words saved in the admin panel', function () {
+    $admin = User::factory()->withRole(Role::SuperAdmin)->create();
+
+    $this->actingAs($admin)->put('/admin/homepage', homePagePayload(['hero' => ['rotating_words' => ['bn' => "গণিত অলিম্পিয়াডে\nবিজ্ঞানে"]]]));
+
+    $this->get('/')->assertSee('গণিত অলিম্পিয়াডে')->assertSee('বিজ্ঞানে');
+});
+
+test('a section added in a later release appears in its default place in a saved layout', function () {
+    $savedBeforeHighlights = array_map(
+        fn (string $key): array => ['key' => $key, 'visible' => $key !== 'stats'],
+        array_values(array_diff(array_keys(HomePageContent::SECTIONS), ['highlights'])),
+    );
+    Setting::create(['key' => HomePageContent::SettingKey, 'value' => ['hero' => [], 'sections' => $savedBeforeHighlights]]);
+
+    $sections = app(HomePageContent::class)->all()['sections'];
+
+    expect(array_column($sections, 'key'))->toBe(array_keys(HomePageContent::SECTIONS))
+        ->and($sections[0]['visible'])->toBeTrue()
+        ->and(collect($sections)->firstWhere('key', 'stats')['visible'])->toBeFalse();
 });
 
 test('a running campaign appears in the hero, the campaigns section and the announcement bar', function () {

@@ -5,7 +5,7 @@
 --}}
 @if ($stats !== [] || $siteLegal['trade_license'])
     <section class="container-page pt-4 pb-8" aria-label="{{ $section['title'] }}">
-        <div class="rounded-[2rem] bg-surface p-6 shadow-card ring-1 ring-line sm:p-8">
+        <div data-reveal class="rounded-[2rem] bg-surface p-6 shadow-card ring-1 ring-line sm:p-8">
             @if ($stats !== [])
                 <h2 class="sr-only">{{ $section['title'] }}</h2>
                 <dl @class([
@@ -17,7 +17,19 @@
                     @foreach ($stats as $stat)
                         <div class="grid gap-1">
                             <dt class="order-2 text-sm text-ink-muted sm:text-base">{{ $stat['label'] }}</dt>
-                            <dd class="order-1 text-3xl font-bold tracking-tight text-ink tabular-nums sm:text-4xl">{{ $stat['value'] }}</dd>
+                            <dd class="order-1 text-3xl font-bold tracking-tight text-ink tabular-nums sm:text-4xl">
+                                @if ($stat['count'])
+                                    {{-- Counts up when scrolled into view (resources/js/motion.js); the final value is in the HTML. --}}
+                                    {{ $stat['count']['prefix'] }}<span
+                                        data-count-to="{{ $stat['count']['number'] }}"
+                                        data-count-decimals="{{ $stat['count']['decimals'] }}"
+                                        data-count-grouping="{{ $stat['count']['grouping'] ? 1 : 0 }}"
+                                        data-count-bangla="{{ app()->getLocale() === 'bn' ? 1 : 0 }}"
+                                    >{{ $stat['count']['display'] }}</span>{{ $stat['count']['suffix'] }}
+                                @else
+                                    {{ $stat['value'] }}
+                                @endif
+                            </dd>
                         </div>
                     @endforeach
                 </dl>

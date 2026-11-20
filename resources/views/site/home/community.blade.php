@@ -19,7 +19,7 @@
             'lg:grid-cols-3' => count($networks) === 3,
         ])>
             @foreach ($networks as $network => $url)
-                <li>
+                <li data-reveal style="--reveal-index: {{ $loop->index }}">
                     <a href="{{ $url }}" target="_blank" rel="noopener" class="group flex min-h-20 items-center gap-4 rounded-card bg-surface p-5 shadow-card ring-1 ring-line transition duration-200 hover:-translate-y-0.5 hover:ring-line-strong">
                         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand ring-1 ring-brand/15 ring-inset">
                             <x-icon :name="$network" class="size-6" />

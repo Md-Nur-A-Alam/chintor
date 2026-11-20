@@ -3,13 +3,17 @@
 {{-- How it works: removes the "what happens after I fill the form?" worry. --}}
 <section class="border-y border-line bg-surface">
     <div class="container-page py-12 lg:py-16">
-        <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{{ $section['title'] }}</h2>
-        @if ($section['subtitle'])
-            <p class="mt-2 max-w-2xl text-lg text-ink-muted">{{ $section['subtitle'] }}</p>
-        @endif
-        <ol class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div data-reveal>
+            <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{{ $section['title'] }}</h2>
+            @if ($section['subtitle'])
+                <p class="mt-2 max-w-2xl text-lg text-ink-muted">{{ $section['subtitle'] }}</p>
+            @endif
+        </div>
+        <ol class="relative mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {{-- A dashed path joining the steps on wide screens. --}}
+            <span aria-hidden="true" class="absolute top-6 right-[12%] left-6 hidden border-t-2 border-dashed border-line-strong lg:block"></span>
             @foreach (__('site.home.steps') as $index => $step)
-                <li class="relative">
+                <li class="relative" data-reveal style="--reveal-index: {{ $index }}">
                     <span class="grid size-12 place-items-center rounded-2xl bg-accent text-lg font-bold text-on-accent shadow-glow">
                         {{ Localization::digits($index + 1) }}
                     </span>

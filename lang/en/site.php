@@ -80,6 +80,7 @@ return [
             'refund' => ':percent% refund guarantee',
         ],
         'sections' => [
+            'highlights' => ['title' => 'What Chintor promises, and our courses'],
             'stats' => ['title' => 'Chintor at a glance'],
             'campaigns' => ['title' => 'Campaigns & events', 'subtitle' => 'Offers, live sessions and contests — join while they last.'],
             'programs' => ['title' => 'Choose your program', 'subtitle' => 'Every program has courses arranged by age and class.'],
@@ -126,6 +127,15 @@ return [
         ],
         'channels' => ['website' => 'Offer', 'facebook' => 'Facebook', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'event' => 'Event'],
         'audience' => ['parent' => 'Parent', 'student' => 'Student'],
+        'highlights' => [
+            ['icon' => 'users', 'text' => 'Live classes with experienced teachers'],
+            ['icon' => 'layers', 'text' => 'Small batches, limited seats'],
+            ['icon' => 'target', 'text' => 'Free 1:1 assessment'],
+            ['icon' => 'refund', 'text' => ':percent% refund in the first :window days'],
+            ['icon' => 'wallet', 'text' => 'Pay by bKash · Nagad · Upay'],
+            ['icon' => 'truck', 'text' => 'Books by courier across Bangladesh'],
+            ['icon' => 'phone', 'text' => 'Talk to a counsellor directly'],
+        ],
         'video_review' => 'Video review',
         'community_cta' => [
             'facebook' => 'Follow our Facebook page',

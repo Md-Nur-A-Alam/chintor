@@ -8,7 +8,7 @@
 
 {{-- A page section with a consistent heading row. --}}
 <section @if ($id) id="{{ $id }}" @endif {{ $attributes->class(['container-page scroll-mt-24 py-12 lg:py-16']) }}>
-    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div data-reveal class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div class="max-w-2xl">
             <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{{ $title }}</h2>
             @if ($subtitle)

@@ -80,6 +80,7 @@ return [
             'refund' => ':percent% রিফান্ড গ্যারান্টি',
         ],
         'sections' => [
+            'highlights' => ['title' => 'চিন্তরের প্রতিশ্রুতি ও কোর্সসমূহ'],
             'stats' => ['title' => 'এক নজরে চিন্তর'],
             'campaigns' => ['title' => 'চলমান ক্যাম্পেইন ও ইভেন্ট', 'subtitle' => 'অফার, লাইভ সেশন ও প্রতিযোগিতা — সময় থাকতে যোগ দিন।'],
             'programs' => ['title' => 'তোমার প্রোগ্রাম বেছে নাও', 'subtitle' => 'প্রতিটি প্রোগ্রামে বয়স ও শ্রেণি অনুযায়ী সাজানো কোর্স।'],
@@ -126,6 +127,15 @@ return [
         ],
         'channels' => ['website' => 'অফার', 'facebook' => 'Facebook', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'event' => 'ইভেন্ট'],
         'audience' => ['parent' => 'অভিভাবক', 'student' => 'শিক্ষার্থী'],
+        'highlights' => [
+            ['icon' => 'users', 'text' => 'অভিজ্ঞ শিক্ষকের লাইভ ক্লাস'],
+            ['icon' => 'layers', 'text' => 'ছোট ব্যাচ, সীমিত আসন'],
+            ['icon' => 'target', 'text' => '১:১ ফ্রি অ্যাসেসমেন্ট'],
+            ['icon' => 'refund', 'text' => 'প্রথম :window দিনে :percent% রিফান্ড'],
+            ['icon' => 'wallet', 'text' => 'বিকাশ · নগদ · উপায়ে পেমেন্ট'],
+            ['icon' => 'truck', 'text' => 'সারা দেশে কুরিয়ারে বই'],
+            ['icon' => 'phone', 'text' => 'কাউন্সেলরের সাথে সরাসরি কথা'],
+        ],
         'video_review' => 'ভিডিও রিভিউ',
         'community_cta' => [
             'facebook' => 'Facebook পেজ ফলো করুন',

@@ -32,6 +32,7 @@ class UpdateHomePageRequest extends FormRequest
             'hero.eyebrow.*' => ['nullable', 'string', 'max:120'],
             'hero.title.*' => ['nullable', 'string', 'max:120'],
             'hero.subtitle.*' => ['nullable', 'string', 'max:400'],
+            'hero.rotating_words.*' => ['nullable', 'string', 'max:500'],
             'hero.video_url' => ['nullable', 'url', 'max:255'],
             'hero.show_trust_chips' => ['boolean'],
 
@@ -82,6 +83,7 @@ class UpdateHomePageRequest extends FormRequest
                 'eyebrow' => TranslatableInput::text($validated['hero']['eyebrow'] ?? null),
                 'title' => TranslatableInput::text($validated['hero']['title'] ?? null),
                 'subtitle' => TranslatableInput::text($validated['hero']['subtitle'] ?? null),
+                'rotating_words' => TranslatableInput::lines($validated['hero']['rotating_words'] ?? null),
                 'buttons' => $this->buttons($validated['buttons'] ?? []),
                 'video_url' => $validated['hero']['video_url'] ?? null,
                 'show_trust_chips' => (bool) ($validated['hero']['show_trust_chips'] ?? false),

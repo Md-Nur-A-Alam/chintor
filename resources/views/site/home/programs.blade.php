@@ -10,7 +10,7 @@
             'lg:grid-cols-4' => $programs->count() >= 4,
         ])>
             @foreach ($programs as $program)
-                <x-site.program-card :program="$program" />
+                <x-reveal :index="$loop->index"><x-site.program-card :program="$program" /></x-reveal>
             @endforeach
         </div>
     </x-site.section>

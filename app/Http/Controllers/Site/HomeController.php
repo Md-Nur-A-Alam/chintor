@@ -13,6 +13,7 @@ use App\Models\Teacher;
 use App\Models\Testimonial;
 use App\Services\HomePageContent;
 use App\Services\SiteSettings;
+use App\Support\Localization;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 
@@ -29,9 +30,11 @@ class HomeController extends Controller
 
     private const TEACHER_LIMIT = 8;
 
-    private const REVIEW_LIMIT = 6;
+    private const REVIEW_LIMIT = 12;
 
     private const FAQ_LIMIT = 8;
+
+    private const HIGHLIGHT_COURSE_LIMIT = 12;
 
     public function __invoke(SiteSettings $settings, HomePageContent $homePage): View
     {
@@ -46,6 +49,7 @@ class HomeController extends Controller
             'heroCampaigns' => $campaigns->filter(fn (Campaign $campaign) => $campaign->show_in_hero && $campaign->image_url)->values(),
             'sections' => $sections,
             'stats' => $homePage->stats(),
+            'highlightLinks' => $shows('highlights') ? $this->highlightLinks() : [],
             'campaigns' => $campaigns,
             'programs' => $shows('programs') ? $this->programs() : new Collection,
             'courses' => $shows('courses') ? $this->courses() : new Collection,
@@ -68,6 +72,28 @@ class HomeController extends Controller
             ->withCount(['courses' => fn ($query) => $query->published()])
             ->orderBy('sort_order')
             ->get();
+    }
+
+    /**
+     * Every published program and course, for the moving highlight lane.
+     *
+     * @return list<array{label: string, url: string}>
+     */
+    private function highlightLinks(): array
+    {
+        $programs = Program::query()->published()->orderBy('sort_order')->get(['id', 'slug', 'name'])
+            ->map(fn (Program $program): array => [
+                'label' => $program->translate('name'),
+                'url' => Localization::route('programs.show', ['program' => $program]),
+            ]);
+
+        $courses = Course::query()->published()->orderByDesc('is_featured')->orderBy('sort_order')->limit(self::HIGHLIGHT_COURSE_LIMIT)->get(['id', 'slug', 'title'])
+            ->map(fn (Course $course): array => [
+                'label' => $course->translate('title'),
+                'url' => Localization::route('courses.show', ['course' => $course]),
+            ]);
+
+        return $programs->concat($courses)->values()->all();
     }
 
     /**

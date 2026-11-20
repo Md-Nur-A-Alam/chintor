@@ -21,7 +21,7 @@ class PermissionSeeder extends Seeder
         'media.manage' => ['label' => 'মিডিয়া লাইব্রেরি', 'roles' => [Role::Manager, Role::Marketing, Role::CourseCoordinator]],
         'catalog.manage' => ['label' => 'প্রোগ্রাম, কোর্স, ব্যাচ ও শিক্ষক', 'roles' => [Role::Manager, Role::CourseCoordinator]],
         'books.manage' => ['label' => 'বই ও লেখক', 'roles' => [Role::Manager, Role::Marketing]],
-        'homepage.manage' => ['label' => 'হোমপেজ ও ক্যাম্পেইন', 'roles' => []],
+        'homepage.manage' => ['label' => 'হোমপেজ ও ক্যাম্পেইন', 'roles' => [Role::Marketing]],
         'content.manage' => ['label' => 'পেজ, FAQ ও রিভিউ', 'roles' => [Role::Manager, Role::Marketing]],
         'leads.view_all' => ['label' => 'সব লিড দেখা (কেন্দ্রীয় কিউ)', 'roles' => [Role::Manager, Role::Marketing]],
         'leads.assign' => ['label' => 'লিড বণ্টন', 'roles' => [Role::Manager, Role::Marketing]],

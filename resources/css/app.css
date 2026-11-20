@@ -188,6 +188,66 @@
     --logo-coral: #fe704d;
 }
 
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes aurora-drift {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(2%, -3%, 0) scale(1.08);
+    }
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+:root {
+    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @layer base {
     html {
         -webkit-tap-highlight-color: transparent;
@@ -302,6 +362,84 @@
         background:
             radial-gradient(ellipse 60% 55% at 12% 0%, var(--aurora-teal), transparent 70%),
             radial-gradient(ellipse 50% 50% at 92% 18%, var(--aurora-coral), transparent 70%);
+    }
+
+    /*
+     * Motion system (transform + opacity only, so it stays smooth on budget
+     * phones). Everything is switched off by the reduced-motion rule above.
+     *
+     *  .animate-rise / .animate-pop   opening animation, staggered with --delay
+     *  [data-reveal]                  fades up when scrolled into view; hidden
+     *                                 only after resources/js/motion.js adds
+     *                                 html.motion, so content never depends on JS
+     *  .marquee                       endless "traffic lane" strip; pauses on
+     *                                 hover/focus, reverse lanes with .marquee-reverse
+     */
+    .animate-rise {
+        animation: rise-in 0.7s var(--ease-out-soft) both;
+        animation-delay: calc(var(--delay, 0) * 100ms);
+    }
+
+    .animate-pop {
+        animation: pop-in 0.9s var(--ease-out-soft) both;
+        animation-delay: calc(var(--delay, 0) * 100ms);
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .animate-aurora {
+        animation: aurora-drift 18s ease-in-out infinite;
+    }
+
+    .motion [data-reveal] {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 0.7s var(--ease-out-soft),
+            transform 0.7s var(--ease-out-soft);
+        transition-delay: calc(var(--reveal-index, 0) * 80ms);
+    }
+
+    .motion [data-reveal].is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    .marquee {
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    }
+
+    .marquee-track {
+        display: flex;
+        width: max-content;
+        animation: marquee var(--marquee-duration, 45s) linear infinite;
+    }
+
+    .marquee-reverse {
+        animation-direction: reverse;
+    }
+
+    .marquee:hover .marquee-track,
+    .marquee:focus-within .marquee-track {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .marquee {
+            overflow-x: auto;
+            mask-image: none;
+        }
+
+        .marquee-track {
+            animation: none;
+        }
+
+        .marquee [data-marquee-clone] {
+            display: none;
+        }
     }
 
     /* Fine dot grid that fades out towards the edges. */

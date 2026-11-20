@@ -16,6 +16,7 @@
             <div class="grid gap-4">
                 <x-form.translatable name="hero[eyebrow]" label="ছোট লাইন (শিরোনামের ওপরে)" :value="$hero['eyebrow']" :help="'ডিফল্ট: '.__('site.home.eyebrow', [], 'bn')" />
                 <x-form.translatable name="hero[title]" label="শিরোনাম" :value="$hero['title']" :help="'ডিফল্ট: '.__('site.home.headline', [], 'bn')" />
+                <x-form.lines name="hero[rotating_words]" label="ঘুরে ঘুরে বদলানো শব্দ (ঐচ্ছিক)" :value="$hero['rotating_words']" :rows="3" help="শিরোনামের নিচে একটার পর একটা অ্যানিমেশনে বদলায়। প্রতি লাইনে একটি, যেমন: গণিত অলিম্পিয়াডে / ক্লাস ৯–১০ বিজ্ঞানে। ফাঁকা রাখলে দেখাবে না।" />
                 <x-form.translatable name="hero[subtitle]" label="সাবটাইটেল" :value="$hero['subtitle']" :multiline="true" :rows="3" />
 
                 <fieldset class="grid gap-3 rounded-2xl p-4 ring-1 ring-line ring-inset">

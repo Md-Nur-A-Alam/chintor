@@ -4,7 +4,7 @@
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($campaigns as $campaign)
                 @php($link = $campaign->localizedLink())
-                <article class="flex flex-col overflow-hidden rounded-card bg-surface shadow-card ring-1 ring-line">
+                <article data-reveal style="--reveal-index: {{ min($loop->index, 5) }}" class="flex flex-col overflow-hidden rounded-card bg-surface shadow-card ring-1 ring-line">
                     @if ($campaign->image_url)
                         <img src="{{ $campaign->image_url }}" alt="" width="1080" height="1080" loading="lazy" decoding="async" class="aspect-square w-full object-cover">
                     @else
