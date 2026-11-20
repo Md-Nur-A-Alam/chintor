@@ -1,4 +1,5 @@
 @use('App\Services\HomePageContent')
+@use('App\Support\HeroBanner')
 
 <x-layouts.admin title="হোমপেজ">
     <x-admin.page-header title="হোমপেজ" description="হিরো সেকশনের লেখা ও বাটন, পরিসংখ্যান, এবং কোন সেকশন কোন ক্রমে দেখাবে। ফাঁকা লেখা রাখলে ডিফল্ট লেখা দেখায়।">
@@ -8,9 +9,46 @@
         </x-slot:actions>
     </x-admin.page-header>
 
-    <form method="POST" action="{{ route('admin.homepage.update') }}" class="grid gap-6">
+    <form method="POST" enctype="multipart/form-data" action="{{ route('admin.homepage.update') }}" class="grid gap-6">
         @csrf
         @method('PUT')
+
+        <x-card title="হিরোর ধরন" description="কোনো চলমান ক্যাম্পেইনে “পূর্ণ ব্যানার” থাকলে সেটাই সবার আগে দেখাবে; না থাকলে এখানের সেটিং।">
+            <div x-data="{ layout: @js(old('hero.layout', $hero['layout'])), overlay: @js((int) old('hero.banner_overlay', $hero['banner_overlay'])) }" class="grid gap-5">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    @foreach (['split' => ['পাশাপাশি (ডিফল্ট)', 'বামে লেখা, ডানে ছবি — শিক্ষক-শিক্ষার্থীর ইলাস্ট্রেশন, বর্গাকার ক্যাম্পেইন ব্যানার বা ভিডিও।'], 'banner' => ['পূর্ণ ব্যাকগ্রাউন্ড ব্যানার', 'পুরো হিরো জুড়ে আপনার ব্যানার ছবি; তার ওপরে কালো-থেকে-স্বচ্ছ ওভারলে আর শিরোনাম, সাবটাইটেল ও বাটন।']] as $value => [$label, $help])
+                        <label class="flex cursor-pointer gap-3 rounded-2xl p-4 ring-1 ring-line ring-inset has-[:checked]:bg-accent-soft has-[:checked]:ring-2 has-[:checked]:ring-accent">
+                            <input type="radio" name="hero[layout]" value="{{ $value }}" x-model="layout" @checked(old('hero.layout', $hero['layout']) === $value) class="mt-1 size-4 accent-[var(--accent)]">
+                            <span><span class="block font-semibold text-ink">{{ $label }}</span><span class="mt-1 block text-sm text-ink-muted">{{ $help }}</span></span>
+                        </label>
+                    @endforeach
+                </div>
+
+                <div x-show="layout === 'banner'" x-cloak class="grid gap-4">
+                    <div class="rounded-2xl bg-surface-muted p-4 text-sm text-ink-muted">
+                        <p class="font-semibold text-ink">ব্যানারের মাপ</p>
+                        <ul class="mt-1 list-disc pl-5">
+                            <li>ডেস্কটপ: <strong class="text-ink">{{ HeroBanner::DESKTOP_SIZE }} px</strong> (JPG/WebP, ৫০০ KB-এর কম হলে ভালো)।</li>
+                            <li>মোবাইল (ঐচ্ছিক): <strong class="text-ink">{{ HeroBanner::MOBILE_SIZE }} px</strong> — না দিলে ডেস্কটপ ছবির মাঝখান কেটে দেখাবে।</li>
+                            <li>লেখা যেদিকে থাকবে, ব্যানারের মূল ছবি/লেখা তার উল্টো দিকে রাখুন; চারপাশের ১০% জায়গায় জরুরি কিছু রাখবেন না।</li>
+                        </ul>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <x-form.image name="banner" label="ডেস্কটপ ব্যানার" :value="$hero['banner_url']" />
+                        <x-form.image name="banner_mobile" label="মোবাইল ব্যানার (ঐচ্ছিক)" :value="$hero['banner_mobile_url']" />
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <x-form.select name="hero[banner_align]" label="শিরোনাম-বাটন কোথায় থাকবে" :value="$hero['banner_align']" :options="HeroBanner::ALIGNMENTS" />
+                        <div class="grid gap-1.5">
+                            <label for="hero-overlay" class="text-sm font-medium text-ink">ওভারলের গাঢ়ত্ব: <span x-text="overlay + '%'"></span></label>
+                            <input id="hero-overlay" type="range" name="hero[banner_overlay]" min="0" max="{{ HeroBanner::MAX_OVERLAY }}" step="5" x-model="overlay" class="h-11 accent-[var(--accent)]">
+                            <p class="text-xs text-ink-subtle">লেখার দিক থেকে কালো, ছবির দিকে স্বচ্ছ। লেখা পড়তে কষ্ট হলে বাড়ান।</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </x-card>
 
         <x-card title="হিরো সেকশন" description="ওয়েবসাইটে ঢুকেই প্রথম যা চোখে পড়ে। ডান পাশে চলমান ক্যাম্পেইনের ব্যানার দেখায়; ক্যাম্পেইন না থাকলে ভিডিও, ভিডিও না থাকলে লোগো।">
             <div class="grid gap-4">

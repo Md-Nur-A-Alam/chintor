@@ -2,8 +2,8 @@
 
 {{--
     The hero visual when no campaign banner or video is set: a brand-teal
-    stage with the mascot and floating cards that state real policies and
-    the next real batch. On a mouse, the cards drift with the pointer
+    stage with a teacher-and-student illustration and floating cards for
+    live classes, the free assessment and the next real batch. On a mouse, the cards drift with the pointer
     (parallax via the CSS `translate` property, so it composes with the
     float animation's `transform`). Off for touch and reduced motion.
 --}}
@@ -42,8 +42,8 @@
         <div aria-hidden="true" class="absolute -right-16 -bottom-16 size-56 rounded-full bg-coral-500/30 blur-3xl"></div>
         <div aria-hidden="true" class="absolute -top-10 -left-10 size-44 rounded-full bg-teal-300/20 blur-3xl"></div>
 
-        <div class="absolute inset-0 grid place-items-center" style="{{ $depthStyle(-10) }}">
-            <x-mascot mood="wave" class="animate-float h-44 w-auto text-white drop-shadow-[0_20px_30px_rgb(0_0_0/0.35)] sm:h-56" />
+        <div class="absolute inset-x-0 bottom-0 top-6" style="{{ $depthStyle(-8) }}">
+            <x-illustration.teaching class="size-full drop-shadow-[0_24px_30px_rgb(0_0_0/0.25)]" preserveAspectRatio="xMidYMax meet" />
         </div>
     </div>
 
@@ -62,19 +62,11 @@
         </span>
     </div>
 
-    <div class="{{ $cardClasses }} top-[56%] right-0 hidden sm:-right-4 sm:flex" style="{{ $depthStyle(30) }}">
+    <div class="{{ $cardClasses }} bottom-[14%] -left-2 hidden sm:-left-8 sm:flex" style="{{ $depthStyle(30) }}">
         <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand"><x-icon name="target" class="size-5" /></span>
         <span>
             <span class="block text-sm font-bold text-ink">{{ __('site.home.stage.assessment_title') }}</span>
             <span class="block text-xs text-ink-muted">{{ __('site.home.stage.assessment_body') }}</span>
-        </span>
-    </div>
-
-    <div class="{{ $cardClasses }} bottom-24 left-0 hidden sm:-left-6 sm:flex" style="{{ $depthStyle(18) }}">
-        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-sun-300/40 text-ink"><x-icon name="shield" class="size-5" /></span>
-        <span>
-            <span class="block text-sm font-bold text-ink">{{ __('site.home.stage.refund_title', $refundParams) }}</span>
-            <span class="block text-xs text-ink-muted">{{ __('site.home.stage.refund_body', $refundParams) }}</span>
         </span>
     </div>
 

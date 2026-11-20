@@ -91,7 +91,7 @@
             {{-- Policy chips; the brand stage already shows them as floating cards. --}}
             @if ($hero['show_trust_chips'] && ! $showsStage)
                 <ul class="mt-8 flex flex-wrap justify-center gap-2 text-sm font-semibold lg:justify-start">
-                    @foreach (['live' => 'users', 'assessment' => 'target', 'refund' => 'shield'] as $chip => $icon)
+                    @foreach (['live' => 'users', 'assessment' => 'target'] as $chip => $icon)
                         <li class="animate-rise flex items-center gap-2 rounded-full bg-surface-raised px-3 py-2 text-ink shadow-card ring-1 ring-line" style="--delay: {{ 5 + $loop->index }}">
                             <x-icon :name="$icon" class="size-4 text-accent-ink" />
                             {{ __("site.home.chips.{$chip}", $refundParams) }}

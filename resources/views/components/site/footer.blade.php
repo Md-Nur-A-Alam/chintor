@@ -13,6 +13,8 @@
             __('site.nav.programs') => Localization::route('programs.index'),
             __('site.nav.courses') => Localization::route('courses.index'),
             __('site.nav.books') => Localization::route('books.index'),
+            __('site.nav.learn') => Localization::route('learn.index'),
+            __('site.nav.arena') => Localization::route('arena.index'),
             __('site.cta.free_assessment') => Localization::route('start', ['assessment' => 1]),
             __('site.nav.track_order') => Localization::route('orders.track'),
         ],

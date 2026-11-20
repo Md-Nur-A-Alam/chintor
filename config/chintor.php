@@ -61,4 +61,16 @@ return [
         'max_result_rows' => 500,
     ],
 
+    /*
+    | Exam Arena (free MCQ practice). A custom practice may give at most
+    | max_minutes_per_question minutes per question (60 questions → up to
+    | 60 minutes). Answers posted later than late_grace_seconds after the
+    | deadline are not counted.
+    */
+    'arena' => [
+        'max_questions' => 60,
+        'max_minutes_per_question' => 1,
+        'late_grace_seconds' => 120,
+    ],
+
 ];

@@ -197,3 +197,39 @@ test('a campaign cannot end before it starts', function () {
         'ends_at' => now()->format('Y-m-d\TH:i'),
     ])->assertSessionHasErrors('ends_at');
 });
+
+test('the hero can use a full-width background banner with the text on the chosen side', function () {
+    $admin = User::factory()->withRole(Role::SuperAdmin)->create();
+
+    $this->actingAs($admin)->put('/admin/homepage', homePagePayload([
+        'hero' => ['layout' => 'banner', 'banner_align' => 'right', 'banner_overlay' => 70],
+        'banner_url' => 'https://example.com/brand-banner.jpg',
+    ]))->assertSessionHasNoErrors();
+
+    $this->get('/')
+        ->assertSee('https://example.com/brand-banner.jpg')
+        ->assertSee('linear-gradient(to left, rgb(0 0 0 / 0.7)', false)
+        ->assertSee('নতুন শিরোনাম');
+});
+
+test('the banner layout needs a banner image', function () {
+    $admin = User::factory()->withRole(Role::SuperAdmin)->create();
+
+    $this->actingAs($admin)
+        ->put('/admin/homepage', homePagePayload(['hero' => ['layout' => 'banner']]))
+        ->assertSessionHasErrors('banner_file');
+});
+
+test('a running campaign with a wide banner takes over the hero with its own text', function () {
+    Campaign::factory()->create([
+        'title' => ['bn' => 'ঈদ অফার চলছে'],
+        'summary' => ['bn' => 'সব কোর্সে বিশেষ ছাড়'],
+        'banner_url' => 'https://example.com/eid-wide.jpg',
+        'banner_align' => 'center',
+    ]);
+
+    $this->get('/')
+        ->assertSee('https://example.com/eid-wide.jpg')
+        ->assertSeeInOrder(['<h1', 'ঈদ অফার চলছে'], false)
+        ->assertSee('সব কোর্সে বিশেষ ছাড়');
+});

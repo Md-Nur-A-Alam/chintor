@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Support\HeroBanner;
 use App\Support\Localization;
 use Illuminate\Support\Facades\Cache;
 
@@ -11,8 +12,10 @@ use Illuminate\Support\Facades\Cache;
  * row in `settings` under the "homepage" key.
  *
  *   hero      eyebrow/title/subtitle ({bn, en}), optional rotating words
- *             under the title, up to 3 buttons, an optional explainer video
- *             and the policy trust chips.
+ *             under the title, up to 3 buttons, an optional explainer video,
+ *             the policy trust chips, and the layout: "split" (text beside
+ *             a visual) or "banner" (text over a full-width background
+ *             image, see App\Support\HeroBanner).
  *   stats     up to 4 impact numbers ("1200+" / "students taught"). Empty
  *             until staff enter real figures, so nothing is ever invented.
  *   sections  every homepage section in display order, each with a visible
@@ -45,8 +48,10 @@ class HomePageContent
         'campaigns' => 'চলমান ক্যাম্পেইন ও ইভেন্ট',
         'programs' => 'প্রোগ্রাম',
         'courses' => 'জনপ্রিয় কোর্স',
+        'videos' => 'ফ্রি শেখার ভিডিও (ফিচার্ড)',
         'steps' => 'কীভাবে শুরু করবেন',
         'why' => 'কেন চিন্তর (রিফান্ড গ্যারান্টিসহ)',
+        'arena' => 'এক্সাম এরিনা',
         'teachers' => 'শিক্ষক',
         'parent_reviews' => 'অভিভাবকদের রিভিউ',
         'student_reviews' => 'শিক্ষার্থীদের রিভিউ',
@@ -95,7 +100,9 @@ class HomePageContent
     /**
      * The hero, ready for the current locale.
      *
-     * @return array{eyebrow: string, title: string, rotating_words: list<string>, subtitle: string, buttons: list<array{label: string, url: string, style: string}>, video_url: ?string, show_trust_chips: bool}
+     * "banner" is set when the hero uses a full-width background banner.
+     *
+     * @return array{eyebrow: string, title: string, rotating_words: list<string>, subtitle: string, buttons: list<array{label: string, url: string, style: string}>, video_url: ?string, show_trust_chips: bool, banner: ?array{desktop: ?string, mobile: ?string, align: string, overlay: int}}
      */
     public function hero(): array
     {
@@ -114,6 +121,9 @@ class HomePageContent
             ], $hero['buttons'])),
             'video_url' => $hero['video_url'],
             'show_trust_chips' => (bool) $hero['show_trust_chips'],
+            'banner' => $hero['layout'] === 'banner' && $hero['banner_url']
+                ? HeroBanner::settings($hero['banner_url'], $hero['banner_mobile_url'], $hero['banner_align'], (int) $hero['banner_overlay'])
+                : null,
         ];
     }
 
@@ -190,7 +200,7 @@ class HomePageContent
     }
 
     /**
-     * @return array{hero: array{eyebrow: null, title: null, subtitle: null, rotating_words: null, buttons: list<array{label: array<string, string>, url: string, style: string}>, video_url: null, show_trust_chips: bool}, stats: list<never>}
+     * @return array{hero: array{eyebrow: null, title: null, subtitle: null, rotating_words: null, layout: string, banner_url: null, banner_mobile_url: null, banner_align: string, banner_overlay: int, buttons: list<array{label: array<string, string>, url: string, style: string}>, video_url: null, show_trust_chips: bool}, stats: list<never>}
      */
     public function defaults(): array
     {
@@ -204,6 +214,11 @@ class HomePageContent
                     ['label' => $this->bothLocales('site.cta.free_assessment'), 'url' => '/start?assessment=1', 'style' => 'secondary'],
                 ],
                 'rotating_words' => null,
+                'layout' => 'split',
+                'banner_url' => null,
+                'banner_mobile_url' => null,
+                'banner_align' => 'left',
+                'banner_overlay' => HeroBanner::DEFAULT_OVERLAY,
                 'video_url' => null,
                 'show_trust_chips' => true,
             ],

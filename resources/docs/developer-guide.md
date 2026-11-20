@@ -106,6 +106,14 @@ Read this before changing code. Product decisions live in `public/assets/require
 - Lanes: `<x-marquee :reverse="true" :duration="60">`. Content must be wider than the screen to loop without a gap, so repeat short lists (repeats get `aria-hidden` and `tabindex="-1"`).
 - Everything respects `prefers-reduced-motion`.
 
+## 9b. Hero banner, learning videos and Exam Arena
+
+- Hero: `HomeController::heroBanner()` picks a running campaign with `banner_url` first, then the homepage `hero.layout = banner`; otherwise the split hero (`site/home/hero.blade.php`). Overlay CSS comes from `App\Support\HeroBanner` (sizes and alignments are constants there).
+- `learning_topics` is a two-level tree (subject → topic) shared by `learning_videos` and `questions`. Public filters use slugs.
+- `App\Services\ExamArena` starts sittings (`startExam`, `startPractice`) and grades them (`submit`). Limits live in `config('chintor.arena')`. Attempts are addressed by ULID; answers are `{question_id: option_index}`.
+- An attempt with a phone creates a lead through `LeadCapture` (`LeadType::ExamArena`).
+- Permission: `learning.manage`.
+
 ## 10. Useful commands
 
 ```bash

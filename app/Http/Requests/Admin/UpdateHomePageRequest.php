@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Controllers\Admin\Concerns\HandlesImageInput;
 use App\Services\HomePageContent;
+use App\Support\HeroBanner;
 use App\Support\TranslatableInput;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -16,6 +18,8 @@ use Illuminate\Validation\Rule;
  */
 class UpdateHomePageRequest extends FormRequest
 {
+    use HandlesImageInput;
+
     public function authorize(): bool
     {
         return $this->user()?->can('homepage.manage') ?? false;
@@ -34,6 +38,11 @@ class UpdateHomePageRequest extends FormRequest
             'hero.subtitle.*' => ['nullable', 'string', 'max:400'],
             'hero.rotating_words.*' => ['nullable', 'string', 'max:500'],
             'hero.video_url' => ['nullable', 'url', 'max:255'],
+            'hero.layout' => ['nullable', Rule::in(['split', 'banner'])],
+            'hero.banner_align' => ['nullable', Rule::in(array_keys(HeroBanner::ALIGNMENTS))],
+            'hero.banner_overlay' => ['nullable', 'integer', 'min:0', 'max:'.HeroBanner::MAX_OVERLAY],
+            ...self::imageRules('banner'),
+            ...self::imageRules('banner_mobile'),
             'hero.show_trust_chips' => ['boolean'],
 
             'buttons' => ['array', 'max:'.HomePageContent::MAX_BUTTONS],
@@ -70,11 +79,12 @@ class UpdateHomePageRequest extends FormRequest
     }
 
     /**
-     * The shape stored by HomePageContent::update().
+     * The shape stored by HomePageContent::update(). Banner image URLs are
+     * resolved by the controller (upload, pasted URL or removal).
      *
      * @return array{hero: array<string, mixed>, stats: list<array<string, mixed>>, sections: list<array<string, mixed>>}
      */
-    public function content(): array
+    public function content(?string $bannerUrl, ?string $bannerMobileUrl): array
     {
         $validated = $this->validated();
 
@@ -86,6 +96,11 @@ class UpdateHomePageRequest extends FormRequest
                 'rotating_words' => TranslatableInput::lines($validated['hero']['rotating_words'] ?? null),
                 'buttons' => $this->buttons($validated['buttons'] ?? []),
                 'video_url' => $validated['hero']['video_url'] ?? null,
+                'layout' => $validated['hero']['layout'] ?? 'split',
+                'banner_url' => $bannerUrl,
+                'banner_mobile_url' => $bannerMobileUrl,
+                'banner_align' => $validated['hero']['banner_align'] ?? 'left',
+                'banner_overlay' => (int) ($validated['hero']['banner_overlay'] ?? HeroBanner::DEFAULT_OVERLAY),
                 'show_trust_chips' => (bool) ($validated['hero']['show_trust_chips'] ?? false),
             ],
             'stats' => $this->stats($validated['stats'] ?? []),

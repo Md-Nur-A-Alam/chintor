@@ -10,6 +10,7 @@ use App\Models\Campaign;
 use App\Models\Course;
 use App\Models\CourseBatch;
 use App\Models\Faq;
+use App\Models\LearningVideo;
 use App\Models\Program;
 use App\Models\Teacher;
 use App\Models\Testimonial;
@@ -46,8 +47,11 @@ class HomeController extends Controller
 
         $campaigns = Campaign::query()->running()->get();
 
+        $hero = $homePage->hero();
+
         return view('site.home', [
-            'hero' => $homePage->hero(),
+            'hero' => $hero,
+            'heroBanner' => $this->heroBanner($hero, $campaigns),
             'nextBatch' => $this->nextBatch(),
             'heroCampaigns' => $campaigns->filter(fn (Campaign $campaign) => $campaign->show_in_hero && $campaign->image_url)->values(),
             'sections' => $sections,
@@ -57,6 +61,9 @@ class HomeController extends Controller
             'programs' => $shows('programs') ? $this->programs() : new Collection,
             'courses' => $shows('courses') ? $this->courses() : new Collection,
             'books' => $shows('books') ? $this->books() : new Collection,
+            'featuredVideos' => $shows('videos')
+                ? LearningVideo::query()->published()->where('is_featured', true)->with(['subject', 'topic'])->orderBy('sort_order')->limit(LearningVideo::MAX_FEATURED)->get()
+                : new Collection,
             'teachers' => $shows('teachers') ? Teacher::query()->active()->orderBy('sort_order')->limit(self::TEACHER_LIMIT)->get() : new Collection,
             'parentReviews' => $shows('parent_reviews') ? $this->reviews(TestimonialAudience::Parent) : new Collection,
             'studentReviews' => $shows('student_reviews') ? $this->reviews(TestimonialAudience::Student) : new Collection,
@@ -75,6 +82,52 @@ class HomeController extends Controller
             ->withCount(['courses' => fn ($query) => $query->published()])
             ->orderBy('sort_order')
             ->get();
+    }
+
+    /**
+     * The full-width banner hero, if any: a running campaign with a wide
+     * banner wins (showing its own title, summary, button and countdown),
+     * otherwise the homepage's own brand banner with the hero texts.
+     *
+     * @param  array<string, mixed>  $hero
+     * @param  Collection<int, Campaign>  $campaigns
+     * @return array{banner: array{desktop: ?string, mobile: ?string, align: string, overlay: int}, content: array<string, mixed>}|null
+     */
+    private function heroBanner(array $hero, Collection $campaigns): ?array
+    {
+        $campaign = $campaigns->first(fn (Campaign $campaign) => $campaign->show_in_hero && $campaign->banner_url);
+
+        if ($campaign !== null) {
+            $link = $campaign->localizedLink();
+
+            return [
+                'banner' => $campaign->heroBanner(),
+                'content' => [
+                    'eyebrow' => __("site.home.channels.{$campaign->channel->value}"),
+                    'title' => (string) $campaign->translate('title'),
+                    'subtitle' => (string) $campaign->translate('summary'),
+                    'words' => [],
+                    'endsAt' => $campaign->ends_at,
+                    'buttons' => $link ? [['label' => $campaign->translate('button_label') ?: __('site.home.campaign.details'), 'url' => $link, 'style' => 'primary']] : [],
+                ],
+            ];
+        }
+
+        if ($hero['banner'] === null) {
+            return null;
+        }
+
+        return [
+            'banner' => $hero['banner'],
+            'content' => [
+                'eyebrow' => $hero['eyebrow'],
+                'title' => $hero['title'],
+                'subtitle' => $hero['subtitle'],
+                'words' => $hero['rotating_words'],
+                'endsAt' => null,
+                'buttons' => $hero['buttons'],
+            ],
+        ];
     }
 
     /**

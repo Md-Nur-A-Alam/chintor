@@ -1,4 +1,5 @@
 @use('App\Enums\CampaignChannel')
+@use('App\Support\HeroBanner')
 
 @php($isEditing = $campaign->exists)
 
@@ -21,7 +22,23 @@
                 </div>
                 <x-form.translatable name="button_label" label="বাটনের লেখা (ঐচ্ছিক)" :value="$campaign->button_label" :help="'ফাঁকা থাকলে: '.__('site.home.campaign.details', [], 'bn')" />
 
-                <x-form.image name="image" label="ব্যানার ছবি" :value="$campaign->image_url" help="বর্গাকার ১০৮০×১০৮০ px (Facebook/Instagram পোস্টের মাপ) — একই ডিজাইন সব জায়গায় ব্যবহার করা যায়। হিরো ব্যানারে দেখাতে ছবি লাগবে।" />
+                <x-form.image name="image" label="বর্গাকার ব্যানার" :value="$campaign->image_url" help="১০৮০×১০৮০ px (Facebook/Instagram পোস্টের মাপ)। হিরোর ডান পাশে স্লাইডারে ও ক্যাম্পেইন সেকশনে দেখায়।" />
+
+                <fieldset x-data="{ overlay: @js((int) old('banner_overlay', $campaign->banner_overlay ?? HeroBanner::DEFAULT_OVERLAY)) }" class="grid gap-4 rounded-2xl p-4 ring-1 ring-line ring-inset">
+                    <legend class="px-1 text-sm font-semibold text-ink">পূর্ণ হিরো ব্যানার (ঐচ্ছিক)</legend>
+                    <p class="text-sm text-ink-muted">দিলে ক্যাম্পেইন চলাকালীন পুরো হিরো জুড়ে এই ব্যানার দেখাবে, তার ওপরে ক্যাম্পেইনের শিরোনাম, সংক্ষেপ, বাটন ও কাউন্টডাউন। মাপ: ডেস্কটপ <strong class="text-ink">{{ HeroBanner::DESKTOP_SIZE }} px</strong>, মোবাইল <strong class="text-ink">{{ HeroBanner::MOBILE_SIZE }} px</strong>। লেখা যেদিকে থাকবে, ব্যানারের মূল ছবি তার উল্টো দিকে রাখুন।</p>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <x-form.image name="banner" label="ডেস্কটপ ব্যানার" :value="$campaign->banner_url" />
+                        <x-form.image name="banner_mobile" label="মোবাইল ব্যানার (ঐচ্ছিক)" :value="$campaign->banner_mobile_url" />
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <x-form.select name="banner_align" label="লেখা কোথায় থাকবে" :value="$campaign->banner_align ?? 'left'" :options="HeroBanner::ALIGNMENTS" />
+                        <div class="grid gap-1.5">
+                            <label for="campaign-overlay" class="text-sm font-medium text-ink">ওভারলের গাঢ়ত্ব: <span x-text="overlay + '%'"></span></label>
+                            <input id="campaign-overlay" type="range" name="banner_overlay" min="0" max="{{ HeroBanner::MAX_OVERLAY }}" step="5" x-model="overlay" value="{{ old('banner_overlay', $campaign->banner_overlay ?? HeroBanner::DEFAULT_OVERLAY) }}" class="h-11 accent-[var(--accent)]">
+                        </div>
+                    </div>
+                </fieldset>
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <x-form.field name="starts_at" type="datetime-local" label="শুরু (ঐচ্ছিক)" :value="$campaign->starts_at?->format('Y-m-d\TH:i')" help="ফাঁকা থাকলে এখনই শুরু।" />

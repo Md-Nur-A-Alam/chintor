@@ -9,10 +9,15 @@ use App\Models\Course;
 use App\Models\CourseBatch;
 use App\Models\CourseVariation;
 use App\Models\DeliveryZone;
+use App\Models\Exam;
+use App\Models\ExamAttempt;
 use App\Models\Faq;
 use App\Models\Lead;
+use App\Models\LearningTopic;
+use App\Models\LearningVideo;
 use App\Models\Page;
 use App\Models\PaymentAccount;
+use App\Models\Question;
 use App\Models\Role;
 use App\Models\Teacher;
 use App\Models\Testimonial;
@@ -67,6 +72,16 @@ beforeEach(function () {
 
     $this->campaign = Campaign::factory()->inBar()->create();
 
+    $this->subject = LearningTopic::factory()->create(['slug' => 'math']);
+    $this->topic = LearningTopic::factory()->topicOf($this->subject)->create(['slug' => 'geometry']);
+    $this->video = LearningVideo::factory()->featured()->for($this->subject, 'subject')->create(['topic_id' => $this->topic->id]);
+    LearningVideo::factory()->for($this->subject, 'subject')->create(['youtube_url' => 'https://youtu.be/aqz-KE-bpKQ', 'orientation' => LearningVideo::Horizontal]);
+    $this->question = Question::factory()->for($this->subject, 'subject')->create(['topic_id' => $this->topic->id, 'explanation_pdf_url' => 'https://drive.google.com/file/d/x/view']);
+    $this->exam = Exam::factory()->create(['question_count' => 1]);
+    $this->exam->questions()->attach($this->question);
+    $this->openAttempt = ExamAttempt::factory()->for($this->exam)->create(['question_ids' => [$this->question->id]]);
+    $this->doneAttempt = ExamAttempt::factory()->create(['question_ids' => [$this->question->id], 'answers' => [$this->question->id => 0], 'submitted_at' => now(), 'wrong_count' => 1]);
+
     $this->admin = User::factory()->withRole(Role::SuperAdmin)->create();
 });
 
@@ -88,6 +103,12 @@ test('public pages render in Bangla and English', function (string $prefix) {
         "/teachers/{$this->teacher->slug}",
         '/start',
         '/info/about',
+        '/learn',
+        '/learn?subject=math&topic=geometry',
+        '/arena',
+        "/arena/exams/{$this->exam->slug}",
+        "/arena/attempts/{$this->openAttempt->ulid}",
+        "/arena/attempts/{$this->doneAttempt->ulid}/result",
     ];
 
     foreach ($urls as $url) {
@@ -143,6 +164,17 @@ test('every admin page renders for an admin', function () {
         '/admin/campaigns',
         '/admin/campaigns/create',
         "/admin/campaigns/{$this->campaign->id}/edit",
+        '/admin/learning-topics',
+        '/admin/learning-videos',
+        '/admin/learning-videos/create',
+        "/admin/learning-videos/{$this->video->id}/edit",
+        '/admin/questions',
+        '/admin/questions/create',
+        "/admin/questions/{$this->question->id}/edit",
+        '/admin/exams',
+        '/admin/exams/create',
+        "/admin/exams/{$this->exam->slug}/edit",
+        '/admin/exam-attempts',
         '/admin/guide',
         '/admin/notifications',
         '/admin/developer',

@@ -25,6 +25,8 @@ enum LeadType: string
 
     case Contact = 'contact';
 
+    case ExamArena = 'exam_arena';
+
     public function label(): string
     {
         return match ($this) {
@@ -35,6 +37,7 @@ enum LeadType: string
             self::BookOrder => 'বইয়ের অর্ডার',
             self::Waitlist => 'ওয়েটলিস্ট',
             self::Contact => 'যোগাযোগ ফর্ম',
+            self::ExamArena => 'এক্সাম এরিনা',
         };
     }
 
@@ -51,6 +54,7 @@ enum LeadType: string
             self::BookOrder => 'neutral',
             self::Waitlist => 'warning',
             self::Contact => 'neutral',
+            self::ExamArena => 'info',
         };
     }
 }

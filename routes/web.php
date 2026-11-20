@@ -16,10 +16,14 @@ use App\Http\Controllers\Admin\Developer\ErrorLogController;
 use App\Http\Controllers\Admin\Developer\SchemaController;
 use App\Http\Controllers\Admin\Developer\StaffAccessController;
 use App\Http\Controllers\Admin\EnrollmentController as AdminEnrollmentController;
+use App\Http\Controllers\Admin\ExamAttemptController;
+use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\GuideController;
 use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
+use App\Http\Controllers\Admin\LearningTopicController;
+use App\Http\Controllers\Admin\LearningVideoController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MediaSettingsController;
 use App\Http\Controllers\Admin\NotificationController;
@@ -28,15 +32,18 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProgramController as AdminProgramController;
+use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\SalesSettingsController;
 use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Site\ArenaController;
 use App\Http\Controllers\Site\BookController;
 use App\Http\Controllers\Site\CourseController;
 use App\Http\Controllers\Site\EnrollmentController;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\LeadController;
+use App\Http\Controllers\Site\LearnController;
 use App\Http\Controllers\Site\OrderController;
 use App\Http\Controllers\Site\PageController;
 use App\Http\Controllers\Site\ProgramController;
@@ -91,6 +98,22 @@ $publicRoutes = function (): void {
     Route::get('/thank-you', [LeadController::class, 'thanks'])->name('leads.thanks');
 
     Route::get('/info/{page}', [PageController::class, 'show'])->name('pages.show');
+
+    // Free learning: video library and Exam Arena (MCQ practice, no login)
+    Route::get('/learn', [LearnController::class, 'index'])->name('learn.index');
+    Route::get('/arena', [ArenaController::class, 'index'])->name('arena.index');
+    Route::post('/arena/practice', [ArenaController::class, 'startPractice'])
+        ->middleware('throttle:public-forms')
+        ->name('arena.practice');
+    Route::get('/arena/exams/{exam}', [ArenaController::class, 'showExam'])->name('arena.exams.show');
+    Route::post('/arena/exams/{exam}/start', [ArenaController::class, 'startExam'])
+        ->middleware('throttle:public-forms')
+        ->name('arena.exams.start');
+    Route::get('/arena/attempts/{attempt}', [ArenaController::class, 'show'])->name('arena.attempts.show');
+    Route::post('/arena/attempts/{attempt}', [ArenaController::class, 'submit'])
+        ->middleware('throttle:public-forms')
+        ->name('arena.attempts.submit');
+    Route::get('/arena/attempts/{attempt}/result', [ArenaController::class, 'result'])->name('arena.attempts.result');
 
     if (! app()->isProduction()) {
         Route::view('/design-system', 'pages.design-system')->name('design-system');
@@ -187,6 +210,15 @@ Route::prefix('admin')->name('admin.')->middleware('locale:bn')->group(function 
             Route::get('/homepage', [HomePageController::class, 'edit'])->name('homepage.edit');
             Route::put('/homepage', [HomePageController::class, 'update'])->name('homepage.update');
             Route::resource('campaigns', CampaignController::class)->except('show');
+        });
+
+        // Learning: video library, question bank and Exam Arena
+        Route::middleware('can:learning.manage')->group(function (): void {
+            Route::resource('learning-topics', LearningTopicController::class)->only(['index', 'store', 'update', 'destroy']);
+            Route::resource('learning-videos', LearningVideoController::class)->except('show');
+            Route::resource('questions', QuestionController::class)->except('show');
+            Route::resource('exams', ExamController::class)->except('show');
+            Route::get('/exam-attempts', [ExamAttemptController::class, 'index'])->name('exam-attempts.index');
         });
 
         // Content

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CampaignChannel;
 use App\Models\Concerns\HasTranslations;
+use App\Support\HeroBanner;
 use App\Support\Localization;
 use Database\Factories\CampaignFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -37,6 +38,10 @@ class Campaign extends Model
         'title',
         'summary',
         'image_url',
+        'banner_url',
+        'banner_mobile_url',
+        'banner_align',
+        'banner_overlay',
         'link_url',
         'button_label',
         'channel',
@@ -92,6 +97,18 @@ class Campaign extends Model
     }
 
     /**
+     * Full-width hero banner settings, or null when it has no wide banner.
+     *
+     * @return array{desktop: ?string, mobile: ?string, align: string, overlay: int}|null
+     */
+    public function heroBanner(): ?array
+    {
+        return $this->banner_url
+            ? HeroBanner::settings($this->banner_url, $this->banner_mobile_url, $this->banner_align, $this->banner_overlay)
+            : null;
+    }
+
+    /**
      * The link with the language prefix added to on-site paths ("/start" → "/en/start").
      */
     public function localizedLink(): ?string
@@ -108,6 +125,7 @@ class Campaign extends Model
             'channel' => CampaignChannel::class,
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'banner_overlay' => 'integer',
             'show_in_hero' => 'boolean',
             'show_in_bar' => 'boolean',
             'is_active' => 'boolean',

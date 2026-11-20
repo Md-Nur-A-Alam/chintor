@@ -51,6 +51,16 @@ class AdminNavigation
             ],
         ],
         [
+            'group' => 'লার্নিং',
+            'items' => [
+                ['label' => 'শেখার ভিডিও', 'route' => 'admin.learning-videos.index', 'icon' => 'play', 'permission' => 'learning.manage', 'active' => 'admin.learning-videos.*'],
+                ['label' => 'প্রশ্ন ব্যাংক', 'route' => 'admin.questions.index', 'icon' => 'file', 'permission' => 'learning.manage', 'active' => 'admin.questions.*'],
+                ['label' => 'পরীক্ষা', 'route' => 'admin.exams.index', 'icon' => 'target', 'permission' => 'learning.manage', 'active' => 'admin.exams.*'],
+                ['label' => 'এরিনার ফলাফল', 'route' => 'admin.exam-attempts.index', 'icon' => 'star', 'permission' => 'learning.manage', 'active' => 'admin.exam-attempts.*'],
+                ['label' => 'বিষয় ও টপিক', 'route' => 'admin.learning-topics.index', 'icon' => 'layers', 'permission' => 'learning.manage', 'active' => 'admin.learning-topics.*'],
+            ],
+        ],
+        [
             'group' => 'কনটেন্ট',
             'items' => [
                 ['label' => 'পেজ', 'route' => 'admin.pages.index', 'icon' => 'file', 'permission' => 'content.manage', 'active' => 'admin.pages.*'],

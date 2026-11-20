@@ -14,7 +14,11 @@
 @endphp
 
 <x-layouts.app>
-    @include('site.home.hero')
+    @if ($heroBanner)
+        @include('site.home.hero-banner', $heroBanner)
+    @else
+        @include('site.home.hero')
+    @endif
 
     @foreach ($sections as $section)
         @php

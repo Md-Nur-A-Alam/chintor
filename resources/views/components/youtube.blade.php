@@ -3,6 +3,7 @@
 @props([
     'url',
     'title' => null,
+    'vertical' => false,
 ])
 
 @php
@@ -18,7 +19,7 @@
 @if ($videoId)
     <div
         x-data="{ playing: false }"
-        {{ $attributes->class(['relative aspect-video overflow-hidden rounded-card bg-teal-950 shadow-card ring-1 ring-line']) }}
+        {{ $attributes->class(['relative overflow-hidden rounded-card bg-teal-950 shadow-card ring-1 ring-line', $vertical ? 'aspect-[9/16]' : 'aspect-video']) }}
     >
         <template x-if="playing">
             <iframe

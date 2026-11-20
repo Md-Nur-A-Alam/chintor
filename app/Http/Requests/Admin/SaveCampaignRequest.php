@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Enums\CampaignChannel;
 use App\Http\Controllers\Admin\Concerns\HandlesImageInput;
+use App\Support\HeroBanner;
 use App\Support\TranslatableInput;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -44,7 +45,11 @@ class SaveCampaignRequest extends FormRequest
             'show_in_bar' => ['boolean'],
             'is_active' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:9999'],
+            'banner_align' => ['nullable', Rule::in(array_keys(HeroBanner::ALIGNMENTS))],
+            'banner_overlay' => ['nullable', 'integer', 'min:0', 'max:'.HeroBanner::MAX_OVERLAY],
             ...self::imageRules('image'),
+            ...self::imageRules('banner'),
+            ...self::imageRules('banner_mobile'),
         ];
     }
 
@@ -66,6 +71,8 @@ class SaveCampaignRequest extends FormRequest
     {
         return [
             ...$this->safe()->only(['channel', 'starts_at', 'ends_at', 'show_in_hero', 'show_in_bar', 'is_active']),
+            'banner_align' => $this->validated('banner_align') ?? 'left',
+            'banner_overlay' => (int) ($this->validated('banner_overlay') ?? HeroBanner::DEFAULT_OVERLAY),
             'title' => TranslatableInput::text($this->validated('title')),
             'summary' => TranslatableInput::text($this->validated('summary')),
             'button_label' => TranslatableInput::text($this->validated('button_label')),

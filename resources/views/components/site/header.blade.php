@@ -6,6 +6,8 @@
 
     $navigation = [
         ['label' => __('site.nav.courses'), 'url' => Localization::route('courses.index'), 'active' => 'courses.*'],
+        ['label' => __('site.nav.learn'), 'url' => Localization::route('learn.index'), 'active' => 'learn.*'],
+        ['label' => __('site.nav.arena'), 'url' => Localization::route('arena.index'), 'active' => 'arena.*'],
         ['label' => __('site.nav.books'), 'url' => Localization::route('books.index'), 'active' => 'books.*'],
         ['label' => __('site.nav.teachers'), 'url' => Localization::route('teachers.index'), 'active' => 'teachers.*'],
         ['label' => __('site.nav.about'), 'url' => Localization::route('pages.show', ['page' => 'about']), 'active' => null],
@@ -27,7 +29,8 @@
             <x-logo class="h-9 w-auto lg:h-11" />
         </a>
 
-        <nav aria-label="{{ __('site.nav.label') }}" class="hidden lg:block">
+        {{-- Seven menu items need about 1280px; below that the menu button is used. --}}
+        <nav aria-label="{{ __('site.nav.label') }}" class="hidden xl:block">
             <ul class="flex items-center gap-1">
                 {{-- Programs dropdown, built from the database --}}
                 <li x-data="{ open: false }" x-on:click.outside="open = false" class="relative">
@@ -36,7 +39,7 @@
                         x-on:click="open = ! open"
                         x-bind:aria-expanded="open"
                         @class([
-                            'inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-2 text-[0.95rem] font-medium transition-colors hover:bg-surface-muted hover:text-ink',
+                            'inline-flex cursor-pointer items-center gap-1 rounded-full whitespace-nowrap px-3 py-2 text-[0.95rem] font-medium transition-colors hover:bg-surface-muted hover:text-ink',
                             'text-ink' => $isActive('programs.*'),
                             'text-ink-muted' => ! $isActive('programs.*'),
                         ])
@@ -68,7 +71,7 @@
                             href="{{ $item['url'] }}"
                             @if ($isActive($item['active'])) aria-current="page" @endif
                             @class([
-                                'rounded-full px-3 py-2 text-[0.95rem] font-medium transition-colors hover:bg-surface-muted hover:text-ink',
+                                'rounded-full whitespace-nowrap px-3 py-2 text-[0.95rem] font-medium transition-colors hover:bg-surface-muted hover:text-ink',
                                 'text-ink' => $isActive($item['active']),
                                 'text-ink-muted' => ! $isActive($item['active']),
                             ])
@@ -80,7 +83,7 @@
 
         <div class="flex items-center gap-2">
             @if ($hotline)
-                <a href="tel:{{ PhoneNumber::forTelLink($hotline) }}" class="hidden items-center gap-2 text-sm xl:flex">
+                <a href="tel:{{ PhoneNumber::forTelLink($hotline) }}" class="hidden items-center gap-2 text-sm 2xl:flex">
                     <span class="grid size-9 place-items-center rounded-full bg-brand-soft text-brand">
                         <x-icon name="phone" class="size-4" />
                     </span>
@@ -104,7 +107,7 @@
 
             <button
                 type="button"
-                class="grid size-10 cursor-pointer place-items-center rounded-full text-ink ring-1 ring-line ring-inset lg:hidden"
+                class="grid size-10 cursor-pointer place-items-center rounded-full text-ink ring-1 ring-line ring-inset xl:hidden"
                 x-on:click="menuOpen = ! menuOpen"
                 x-bind:aria-expanded="menuOpen"
                 aria-controls="mobile-menu"
@@ -117,7 +120,7 @@
     </div>
 
     {{-- Mobile menu --}}
-    <div id="mobile-menu" x-show="menuOpen" x-cloak x-transition.opacity.duration.150ms class="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-canvas lg:hidden">
+    <div id="mobile-menu" x-show="menuOpen" x-cloak x-transition.opacity.duration.150ms class="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-canvas xl:hidden">
         <nav aria-label="{{ __('site.nav.label') }}" class="container-page py-4">
             <p class="px-3 pb-1 text-xs font-semibold tracking-wide text-ink-subtle">{{ __('site.nav.programs') }}</p>
             <ul class="grid gap-1">
