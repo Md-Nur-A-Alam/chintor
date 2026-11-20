@@ -87,7 +87,15 @@ Read this before changing code. Product decisions live in `public/assets/require
 | Database console | Statements are split on `;`. Writes need write mode, your password, and `CHINTOR_DEV_SQL_WRITES=true` (off by default in production). Every statement is logged in `developer_query_logs`. |
 | ER diagram | Built live from the schema (`DatabaseSchema::mermaid()`) and rendered with Mermaid 11.4.1 from jsDelivr, on that page only. |
 | Error log | Tail of `storage/logs/*.log`, parsed by `LogReader`. |
-| Staff access | Profile switch stores your id in the session (`impersonator_id`). Password reset generates a one-time password and notifies the user. |
+| Staff access | Profile switch is limited to the `developer` role (checked with `isDeveloper()`, so super admins cannot switch even though `Gate::before` lets them through elsewhere). It stores your id in the session (`impersonator_id`). Password reset generates a one-time password and notifies the user. |
+
+## 9a. Homepage builder and campaigns
+
+- `App\Services\HomePageContent` stores the hero, stats and section list as JSON in `settings` (key `homepage`) and caches it. Empty texts fall back to `lang/{locale}/site.php` (`site.home.*`).
+- `site/home.blade.php` renders the hero, then `@include("site.home.{key}")` for each visible section in order. To add a section: add its key to `HomePageContent::SECTIONS`, add `site.home.sections.{key}.title` translations, create `resources/views/site/home/{key}.blade.php` (render nothing when there is no content), and load its data in `HomeController` only when the section is visible.
+- `Campaign::running()` = active and inside `starts_at`/`ends_at`. The hero uses running campaigns with `show_in_hero` and an image; the announcement bar uses the first one with `show_in_bar` (view composer in `AppServiceProvider`, cached for 5 minutes, cleared on save).
+- Admin-entered links go through `Localization::path()`, which adds the locale prefix to on-site paths.
+- The app timezone is `Asia/Dhaka`.
 
 ## 10. Useful commands
 

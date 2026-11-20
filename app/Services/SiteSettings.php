@@ -36,7 +36,7 @@ class SiteSettings
     ];
 
     /**
-     * @var array{hotline: ?string, whatsapp: ?string, messenger_url: ?string, facebook_url: ?string, youtube_url: ?string, email: ?string, office_hours: ?string, address: ?string}
+     * @var array{hotline: ?string, whatsapp: ?string, messenger_url: ?string, facebook_url: ?string, youtube_url: ?string, instagram_url: ?string, email: ?string, office_hours: ?string, address: ?string}
      */
     public const CONTACT_DEFAULTS = [
         'hotline' => null,
@@ -44,6 +44,7 @@ class SiteSettings
         'messenger_url' => null,
         'facebook_url' => null,
         'youtube_url' => null,
+        'instagram_url' => null,
         'email' => null,
         'office_hours' => '09:00-22:00',
         'address' => null,

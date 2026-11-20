@@ -25,16 +25,24 @@ class StaffAccessController extends Controller
 
     private const GENERATED_PASSWORD_LENGTH = 10;
 
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.developer.staff', [
             'users' => User::query()->where('type', User::TypeStaff)->with('roles')->orderBy('name')->get(),
+            'canSwitchProfiles' => $request->user()->isDeveloper(),
         ]);
     }
 
+    /**
+     * Only the developer role may switch profiles — not super admins, even
+     * though they can open the other developer tools. It is a support tool
+     * for reproducing problems, not part of running the business.
+     */
     public function impersonate(Request $request, User $user): RedirectResponse
     {
         $developer = $request->user();
+
+        abort_unless($developer->isDeveloper(), 403, 'প্রোফাইল সুইচ শুধু ডেভেলপার অ্যাকাউন্ট থেকে করা যায়।');
 
         if ($user->is($developer) || ! $user->is_active || ! $user->isStaff()) {
             return back()->withErrors(['general' => 'এই প্রোফাইলে সুইচ করা যাবে না।']);
@@ -55,7 +63,7 @@ class StaffAccessController extends Controller
         $developerId = $request->session()->pull(self::ImpersonatorKey);
         $developer = $developerId ? User::find($developerId) : null;
 
-        abort_unless($developer !== null && $developer->can('developer.tools'), 403);
+        abort_unless($developer !== null && $developer->isDeveloper(), 403);
 
         Auth::login($developer);
 

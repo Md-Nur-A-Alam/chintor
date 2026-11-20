@@ -4,6 +4,7 @@ use App\Enums\LeadType;
 use App\Enums\PublishStatus;
 use App\Models\Assessment;
 use App\Models\Book;
+use App\Models\Campaign;
 use App\Models\Course;
 use App\Models\CourseBatch;
 use App\Models\CourseVariation;
@@ -63,6 +64,8 @@ beforeEach(function () {
 
     $this->lead = Lead::factory()->create(['type' => LeadType::Assessment]);
     $this->assessment = Assessment::create(['lead_id' => $this->lead->id, 'status' => 'requested']);
+
+    $this->campaign = Campaign::factory()->inBar()->create();
 
     $this->admin = User::factory()->withRole(Role::SuperAdmin)->create();
 });
@@ -136,6 +139,10 @@ test('every admin page renders for an admin', function () {
         '/admin/settings/sales',
         '/admin/payment-accounts',
         '/admin/payment-accounts/create',
+        '/admin/homepage',
+        '/admin/campaigns',
+        '/admin/campaigns/create',
+        "/admin/campaigns/{$this->campaign->id}/edit",
         '/admin/guide',
         '/admin/notifications',
         '/admin/developer',

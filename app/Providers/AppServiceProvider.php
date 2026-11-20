@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Campaign;
 use App\Models\Program;
 use App\Models\User;
 use App\Services\SiteSettings;
@@ -52,6 +53,19 @@ class AppServiceProvider extends ServiceProvider
                 now()->addHour(),
                 fn () => Program::query()->published()->orderBy('sort_order')->get(['id', 'slug', 'name', 'icon']),
             ));
+        });
+
+        // The running "announcement bar" campaign; re-checked every few minutes so
+        // scheduled campaigns appear and disappear on time (cleared on every change).
+        View::composer('components.site.announcement-bar', function (\Illuminate\View\View $view): void {
+            $cached = Cache::remember(
+                Campaign::BarCacheKey,
+                now()->addMinutes(5),
+                fn (): array => ['campaign' => Campaign::query()->running()->where('show_in_bar', true)->first()],
+            );
+
+            $campaign = $cached['campaign'];
+            $view->with('announcement', $campaign?->isRunning() ? $campaign : null);
         });
 
         // Public layout pieces read contact channels and legal details from settings (cached).

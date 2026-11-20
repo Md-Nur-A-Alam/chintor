@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AssessmentController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\ContactSettingsController;
 use App\Http\Controllers\Admin\CourseBatchController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Admin\Developer\StaffAccessController;
 use App\Http\Controllers\Admin\EnrollmentController as AdminEnrollmentController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\GuideController;
+use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MediaSettingsController;
@@ -179,6 +181,13 @@ Route::prefix('admin')->name('admin.')->middleware('locale:bn')->group(function 
         });
 
         Route::resource('books', AdminBookController::class)->except('show')->middleware('can:books.manage');
+
+        // Website: homepage builder and campaigns
+        Route::middleware('can:homepage.manage')->group(function (): void {
+            Route::get('/homepage', [HomePageController::class, 'edit'])->name('homepage.edit');
+            Route::put('/homepage', [HomePageController::class, 'update'])->name('homepage.update');
+            Route::resource('campaigns', CampaignController::class)->except('show');
+        });
 
         // Content
         Route::middleware('can:content.manage')->group(function (): void {

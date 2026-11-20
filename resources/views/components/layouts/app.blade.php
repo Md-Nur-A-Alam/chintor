@@ -17,7 +17,7 @@
     $shareImage = $image ?? asset('assets/logo/square%20logo.png');
 
     $contact = $siteContact;
-    $sameAs = array_values(array_filter([$contact['facebook_url'], $contact['youtube_url']]));
+    $sameAs = array_values(array_filter([$contact['facebook_url'], $contact['youtube_url'], $contact['instagram_url']]));
     $organization = array_filter([
         '@context' => 'https://schema.org',
         '@type' => 'EducationalOrganization',
@@ -81,6 +81,8 @@
         <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-surface focus:px-4 focus:py-2 focus:shadow-card">
             {{ __('site.skip_to_content') }}
         </a>
+
+        <x-site.announcement-bar />
 
         <x-site.header />
 

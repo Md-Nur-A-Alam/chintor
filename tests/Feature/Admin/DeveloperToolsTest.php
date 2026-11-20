@@ -82,6 +82,14 @@ test('a developer can switch to a staff profile and back', function () {
     $this->assertAuthenticatedAs($this->developer);
 });
 
+test('profile switching is for the developer role only, not super admins', function () {
+    $admin = User::factory()->withRole(Role::SuperAdmin)->create();
+
+    $this->actingAs($admin)->get('/admin/developer/staff')->assertOk()->assertDontSee(route('admin.developer.staff.impersonate', $this->manager));
+    $this->actingAs($admin)->post("/admin/developer/staff/{$this->manager->id}/impersonate")->assertForbidden();
+    $this->assertAuthenticatedAs($admin);
+});
+
 test('staff without the developer tools cannot switch profiles', function () {
     $this->actingAs($this->manager)->post("/admin/developer/staff/{$this->developer->id}/impersonate")->assertForbidden();
     $this->actingAs($this->manager)->post('/admin/impersonation/stop')->assertForbidden();

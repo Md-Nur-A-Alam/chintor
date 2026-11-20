@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TestimonialAudience;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,7 @@ class Testimonial extends Model
     protected $fillable = [
         'author_name',
         'author_role',
+        'audience',
         'body',
         'rating',
         'photo_url',
@@ -50,6 +52,7 @@ class Testimonial extends Model
     {
         return [
             'author_role' => 'array',
+            'audience' => TestimonialAudience::class,
             'body' => 'array',
             'consent_confirmed' => 'boolean',
             'is_published' => 'boolean',

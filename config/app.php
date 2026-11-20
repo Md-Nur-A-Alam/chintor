@@ -65,7 +65,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Staff enter batch, campaign and payment times in Bangladesh time.
+    'timezone' => 'Asia/Dhaka',
 
     /*
     |--------------------------------------------------------------------------

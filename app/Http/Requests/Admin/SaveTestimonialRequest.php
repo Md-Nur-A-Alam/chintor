@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\TestimonialAudience;
 use App\Http\Controllers\Admin\Concerns\HandlesImageInput;
 use App\Support\TranslatableInput;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,6 +36,7 @@ class SaveTestimonialRequest extends FormRequest
         return [
             'author_name' => ['required', 'string', 'max:100'],
             'author_role.*' => ['nullable', 'string', 'max:120'],
+            'audience' => ['required', Rule::enum(TestimonialAudience::class)],
             'body.bn' => ['required', 'string', 'max:2000'],
             'body.en' => ['nullable', 'string', 'max:2000'],
             'rating' => ['nullable', 'integer', 'between:1,5'],
@@ -63,7 +65,7 @@ class SaveTestimonialRequest extends FormRequest
     public function attributesForModel(): array
     {
         return [
-            ...$this->safe()->only(['author_name', 'rating', 'video_url', 'course_id', 'consent_confirmed', 'is_published']),
+            ...$this->safe()->only(['author_name', 'audience', 'rating', 'video_url', 'course_id', 'consent_confirmed', 'is_published']),
             'author_role' => TranslatableInput::text($this->validated('author_role')),
             'body' => TranslatableInput::text($this->validated('body')),
             'sort_order' => (int) $this->validated('sort_order'),

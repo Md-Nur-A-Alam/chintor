@@ -1,6 +1,12 @@
 <x-layouts.admin title="স্টাফ অ্যাক্সেস">
     <x-admin.page-header title="স্টাফ অ্যাক্সেস" description="কারও সমস্যা দেখতে তাঁর প্রোফাইলে সুইচ করুন, অথবা পাসওয়ার্ড ভুলে গেলে নতুন পাসওয়ার্ড দিন। দুটো কাজই লগ হয়।" />
 
+    @unless ($canSwitchProfiles)
+        <p class="mb-6 rounded-2xl bg-surface-muted p-4 text-sm text-ink-muted ring-1 ring-line ring-inset">
+            প্রোফাইল সুইচ শুধু <strong class="text-ink">ডেভেলপার</strong> রোলের অ্যাকাউন্ট থেকে করা যায়। এখান থেকে আপনি পাসওয়ার্ড রিসেট করতে পারবেন।
+        </p>
+    @endunless
+
     @if (session('generated_password'))
         @php($generated = session('generated_password'))
         <div x-data="{ copied: false }" class="mb-6 rounded-card bg-sun-300/25 p-5 ring-1 ring-sun-500/40 ring-inset">
@@ -26,7 +32,7 @@
                 <td class="px-4 py-3 text-ink-muted">{{ $user->last_login_at?->diffForHumans() ?? '—' }}</td>
                 <td class="px-4 py-3">
                     <div class="flex justify-end gap-2">
-                        @if (! $user->is(auth()->user()) && $user->is_active)
+                        @if ($canSwitchProfiles && ! $user->is(auth()->user()) && $user->is_active)
                             <form method="POST" action="{{ route('admin.developer.staff.impersonate', $user) }}">
                                 @csrf
                                 <x-button type="submit" variant="secondary" size="sm"><x-icon name="switch" class="size-4" /> সুইচ</x-button>

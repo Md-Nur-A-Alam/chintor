@@ -44,6 +44,13 @@ class AdminNavigation
             ],
         ],
         [
+            'group' => 'ওয়েবসাইট',
+            'items' => [
+                ['label' => 'হোমপেজ', 'route' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'homepage.manage', 'active' => 'admin.homepage.*'],
+                ['label' => 'ক্যাম্পেইন', 'route' => 'admin.campaigns.index', 'icon' => 'megaphone', 'permission' => 'homepage.manage', 'active' => 'admin.campaigns.*'],
+            ],
+        ],
+        [
             'group' => 'কনটেন্ট',
             'items' => [
                 ['label' => 'পেজ', 'route' => 'admin.pages.index', 'icon' => 'file', 'permission' => 'content.manage', 'active' => 'admin.pages.*'],

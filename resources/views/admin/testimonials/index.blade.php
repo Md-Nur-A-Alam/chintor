@@ -11,7 +11,7 @@
         </x-slot:head>
         @forelse ($testimonials as $testimonial)
             <tr>
-                <td class="px-4 py-3"><p class="font-semibold text-ink">{{ $testimonial->author_name }}</p><p class="line-clamp-1 text-xs text-ink-subtle">{{ $testimonial->translate('body', 'bn') }}</p></td>
+                <td class="px-4 py-3"><p class="font-semibold text-ink">{{ $testimonial->author_name }} <x-badge :tone="$testimonial->audience->tone()">{{ $testimonial->audience->label() }}</x-badge></p><p class="line-clamp-1 text-xs text-ink-subtle">{{ $testimonial->translate('body', 'bn') }}</p></td>
                 <td class="px-4 py-3 text-ink-muted">{{ $testimonial->course?->translate('title', 'bn') ?? '—' }}</td>
                 <td class="px-4 py-3"><x-badge :tone="$testimonial->consent_confirmed ? 'success' : 'warning'">{{ $testimonial->consent_confirmed ? 'আছে' : 'নেই' }}</x-badge></td>
                 <td class="px-4 py-3"><x-badge :tone="$testimonial->is_published ? 'success' : 'neutral'">{{ $testimonial->is_published ? 'প্রকাশিত' : 'খসড়া' }}</x-badge></td>

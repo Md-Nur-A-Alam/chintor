@@ -32,6 +32,7 @@ class UpdateContactSettingsRequest extends FormRequest
             'messenger_url' => ['nullable', 'url:https', 'max:255'],
             'facebook_url' => ['nullable', 'url:https', 'max:255'],
             'youtube_url' => ['nullable', 'url:https', 'max:255'],
+            'instagram_url' => ['nullable', 'url:https', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'office_hours' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],

@@ -38,20 +38,15 @@
             <x-logo class="h-11 w-auto" />
             <p class="mt-4 text-sm leading-relaxed text-ink-muted">{{ __('site.footer.about') }}</p>
 
-            @if ($contact['facebook_url'] || $contact['youtube_url'])
+            @php($socialLinks = array_filter(['facebook' => $contact['facebook_url'], 'youtube' => $contact['youtube_url'], 'instagram' => $contact['instagram_url']]))
+            @if ($socialLinks !== [])
                 <div class="mt-5 flex gap-2">
-                    @if ($contact['facebook_url'])
-                        <a href="{{ $contact['facebook_url'] }}" rel="noopener" target="_blank" class="grid size-10 place-items-center rounded-full bg-surface-muted text-ink-muted hover:text-ink">
-                            <x-icon name="facebook" class="size-5" />
-                            <span class="sr-only">Facebook</span>
+                    @foreach ($socialLinks as $network => $url)
+                        <a href="{{ $url }}" rel="noopener" target="_blank" class="grid size-11 place-items-center rounded-full bg-surface-muted text-ink-muted hover:text-ink">
+                            <x-icon :name="$network" class="size-5" />
+                            <span class="sr-only">{{ ucfirst($network) }}</span>
                         </a>
-                    @endif
-                    @if ($contact['youtube_url'])
-                        <a href="{{ $contact['youtube_url'] }}" rel="noopener" target="_blank" class="grid size-10 place-items-center rounded-full bg-surface-muted text-ink-muted hover:text-ink">
-                            <x-icon name="youtube" class="size-5" />
-                            <span class="sr-only">YouTube</span>
-                        </a>
-                    @endif
+                    @endforeach
                 </div>
             @endif
         </div>

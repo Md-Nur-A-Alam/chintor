@@ -19,6 +19,7 @@
             <div class="grid gap-4 md:grid-cols-2">
                 <x-form.field name="facebook_url" label="Facebook পেজ" type="url" :value="$contact['facebook_url']" />
                 <x-form.field name="youtube_url" label="YouTube চ্যানেল" type="url" :value="$contact['youtube_url']" />
+                <x-form.field name="instagram_url" label="Instagram প্রোফাইল" type="url" :value="$contact['instagram_url']" />
             </div>
             <div class="mt-4">
                 <x-form.textarea name="address" label="অফিসের ঠিকানা" :value="$contact['address']" rows="3" />

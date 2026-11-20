@@ -9,14 +9,15 @@
 
         <x-card>
             <div class="grid gap-4">
-                <div class="grid gap-4 md:grid-cols-3">
+                <div class="grid gap-4 md:grid-cols-4">
                     <x-form.field name="author_name" label="নাম" :value="$testimonial->author_name" required />
+                    <x-form.select name="audience" label="কে লিখেছেন" :value="$testimonial->audience?->value ?? 'parent'" :options="App\Enums\TestimonialAudience::options()" required help="হোমপেজে অভিভাবক ও শিক্ষার্থীদের রিভিউ আলাদা সেকশনে দেখায়।" />
                     <x-form.select name="course_id" label="কোর্স" :value="$testimonial->course_id" placeholder="—" :options="$courses" />
                     <x-form.select name="rating" label="রেটিং" :value="$testimonial->rating" placeholder="—" :options="[5 => '৫', 4 => '৪', 3 => '৩', 2 => '২', 1 => '১']" />
                 </div>
                 <x-form.translatable name="author_role" label="পরিচয় (যেমন: অভিভাবক, ৫ম শ্রেণি)" :value="$testimonial->author_role" />
                 <x-form.translatable name="body" label="রিভিউ" :value="$testimonial->body" :multiline="true" :rows="4" required />
-                <x-form.field name="video_url" type="url" label="ভিডিও লিংক (ঐচ্ছিক)" :value="$testimonial->video_url" />
+                <x-form.field name="video_url" type="url" label="ভিডিও রিভিউ — YouTube লিংক (ঐচ্ছিক)" :value="$testimonial->video_url" />
                 <x-form.image name="photo" label="ছবি (ঐচ্ছিক)" :value="$testimonial->photo_url" />
                 <div class="grid gap-3 rounded-2xl bg-surface-muted p-4">
                     <x-form.checkbox name="consent_confirmed" label="এই ব্যক্তির কাছ থেকে প্রকাশের লিখিত/মৌখিক সম্মতি নেওয়া হয়েছে" :checked="$testimonial->consent_confirmed" />

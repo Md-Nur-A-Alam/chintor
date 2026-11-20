@@ -85,6 +85,26 @@ class Localization
     }
 
     /**
+     * Localize an admin-entered link. On-site paths ("/start?assessment=1")
+     * get the locale prefix ("/en/start?assessment=1"); full URLs, "#anchors",
+     * "tel:" and "mailto:" links are returned unchanged.
+     */
+    public static function path(string $link, ?string $locale = null): string
+    {
+        $locale ??= App::getLocale();
+
+        if (! str_starts_with($link, '/') || str_starts_with($link, '//')) {
+            return $link;
+        }
+
+        if ($locale === self::defaultLocale() || str_starts_with($link, "/{$locale}/") || $link === "/{$locale}") {
+            return url($link);
+        }
+
+        return url($link === '/' ? "/{$locale}" : "/{$locale}{$link}");
+    }
+
+    /**
      * Convert Latin digits to Bangla digits when the active locale is Bangla.
      */
     public static function digits(string|int|float $value, ?string $locale = null): string
